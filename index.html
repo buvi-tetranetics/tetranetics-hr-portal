@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tetranetics — Leave Balance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:    #0D1B2A;
+  --navy2:   #152235;
+  --navy3:   #1E3048;
+  --teal:    #00C2A8;
+  --teal2:   #00E5C8;
+  --amber:   #F5A623;
+  --rose:    #FF6B6B;
+  --green:   #4ECDC4;
+  --text:    #E8EDF2;
+  --text2:   #8FA3B8;
+  --text3:   #5C7A96;
+  --border:  rgba(255,255,255,0.07);
+  --border2: rgba(0,194,168,0.25);
+  --card:    rgba(255,255,255,0.04);
+  --card2:   rgba(255,255,255,0.07);
+  --r:       12px;
+  --r2:      8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--navy);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── background grid ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,194,168,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,194,168,0.03) 1px, transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;z-index:0;
+}
+body::after{
+  content:'';
+  position:fixed;
+  top:-200px;right:-200px;
+  width:600px;height:600px;
+  background:radial-gradient(circle, rgba(0,194,168,0.08) 0%, transparent 70%);
+  pointer-events:none;z-index:0;
+}
+
+.page{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:32px 20px 80px;}
+
+/* ── header ── */
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:48px;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-mark{
+  width:36px;height:36px;
+  background:linear-gradient(135deg,var(--teal),var(--teal2));
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;font-size:14px;font-weight:500;
+  color:var(--navy);
+}
+.logo-text{font-size:15px;font-weight:600;letter-spacing:-.01em;color:var(--text);}
+.logo-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+.header-tag{
+  font-size:11px;font-family:'DM Mono',monospace;
+  color:var(--teal);background:rgba(0,194,168,0.1);
+  border:1px solid rgba(0,194,168,0.2);
+  padding:4px 10px;border-radius:20px;
+}
+
+/* ── login card ── */
+#login-view{
+  max-width:440px;margin:60px auto 0;
+  animation:fadeUp .4s ease both;
+}
+.login-card{
+  background:var(--navy2);
+  border:1px solid var(--border2);
+  border-radius:var(--r);
+  padding:36px 32px;
+}
+.login-title{font-size:22px;font-weight:600;margin-bottom:6px;letter-spacing:-.02em;}
+.login-sub{font-size:14px;color:var(--text2);margin-bottom:28px;line-height:1.6;}
+.input-wrap{position:relative;margin-bottom:14px;}
+.input-wrap input{
+  width:100%;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  padding:13px 16px;
+  font-family:'DM Sans',sans-serif;font-size:14px;
+  color:var(--text);outline:none;transition:border-color .2s;
+}
+.input-wrap input:focus{border-color:rgba(0,194,168,0.5);}
+.input-wrap input::placeholder{color:var(--text3);}
+.btn-primary{
+  width:100%;padding:13px;
+  background:linear-gradient(135deg,var(--teal),var(--teal2));
+  border:none;border-radius:var(--r2);
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+  color:var(--navy);cursor:pointer;
+  transition:opacity .2s,transform .1s;
+}
+.btn-primary:hover{opacity:.9;}
+.btn-primary:active{transform:scale(.99);}
+.or-sep{text-align:center;color:var(--text3);font-size:12px;margin:16px 0;position:relative;}
+.or-sep::before,.or-sep::after{
+  content:'';position:absolute;top:50%;width:42%;height:1px;
+  background:var(--border);
+}
+.or-sep::before{left:0}.or-sep::after{right:0}
+.btn-ms{
+  width:100%;padding:12px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
+  color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:background .2s,border-color .2s;
+}
+.btn-ms:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);}
+.ms-icon{width:16px;height:16px;flex-shrink:0;}
+.login-note{margin-top:20px;font-size:12px;color:var(--text3);text-align:center;line-height:1.6;}
+.error-msg{
+  background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.25);
+  border-radius:var(--r2);padding:10px 14px;
+  font-size:13px;color:#FF8F8F;margin-bottom:14px;display:none;
+}
+.loading-dots{display:none;justify-content:center;gap:6px;padding:16px 0;}
+.loading-dots span{
+  width:6px;height:6px;border-radius:50%;background:var(--teal);
+  animation:dot .8s ease-in-out infinite;
+}
+.loading-dots span:nth-child(2){animation-delay:.15s;}
+.loading-dots span:nth-child(3){animation-delay:.3s;}
+
+/* ── dashboard ── */
+#dash-view{display:none;animation:fadeUp .4s ease both;}
+
+.dash-header{margin-bottom:28px;}
+.dash-greeting{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-bottom:4px;}
+.dash-sub{font-size:14px;color:var(--text2);}
+.dash-dept{
+  display:inline-block;margin-left:8px;
+  font-size:11px;font-family:'DM Mono',monospace;
+  color:var(--teal);background:rgba(0,194,168,0.1);
+  border:1px solid rgba(0,194,168,0.2);
+  padding:2px 8px;border-radius:20px;vertical-align:middle;
+}
+.last-updated{font-size:12px;color:var(--text3);margin-top:6px;}
+
+/* KPI strip */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+@media(max-width:640px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+.kpi-card{
+  background:var(--navy2);border:1px solid var(--border);
+  border-radius:var(--r);padding:18px 18px 16px;
+  transition:border-color .2s,transform .2s;
+}
+.kpi-card:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-1px);}
+.kpi-card.highlight{
+  background:linear-gradient(135deg,rgba(0,194,168,0.12),rgba(0,229,200,0.06));
+  border-color:rgba(0,194,168,0.3);
+}
+.kpi-label{font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.kpi-value{font-size:28px;font-weight:600;letter-spacing:-.03em;line-height:1;}
+.kpi-value.teal{color:var(--teal2);}
+.kpi-value.amber{color:var(--amber);}
+.kpi-value.rose{color:var(--rose);}
+.kpi-value.green{color:var(--green);}
+.kpi-sub{font-size:12px;color:var(--text3);margin-top:4px;}
+
+/* balance bar */
+.balance-bar-wrap{
+  background:var(--navy2);border:1px solid var(--border);
+  border-radius:var(--r);padding:20px 22px;margin-bottom:20px;
+}
+.bar-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;}
+.bar-title{font-size:13px;font-weight:500;color:var(--text2);}
+.bar-pct{font-size:13px;font-family:'DM Mono',monospace;color:var(--teal);}
+.bar-track{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--teal2));
+  transition:width 1s cubic-bezier(.23,1,.32,1);}
+.bar-fill.warn{background:linear-gradient(90deg,var(--amber),#FFD166);}
+.bar-fill.danger{background:linear-gradient(90deg,var(--rose),#FF8E8E);}
+.bar-legend{display:flex;gap:20px;margin-top:10px;}
+.bar-leg-item{font-size:12px;color:var(--text3);display:flex;align-items:center;gap:5px;}
+.bar-leg-dot{width:8px;height:8px;border-radius:2px;}
+
+/* section header */
+.section-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;
+}
+.section-title{font-size:13px;font-weight:500;color:var(--text2);
+  display:flex;align-items:center;gap:6px;}
+.section-title::before{
+  content:'';width:3px;height:14px;
+  background:var(--teal);border-radius:2px;display:block;
+}
+.toggle-all{font-size:12px;color:var(--teal3,var(--text3));cursor:pointer;
+  background:none;border:none;font-family:'DM Sans',sans-serif;
+  transition:color .2s;}
+.toggle-all:hover{color:var(--teal);}
+
+/* month accordion */
+.month-list{display:flex;flex-direction:column;gap:8px;}
+.month-card{
+  background:var(--navy2);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;
+  transition:border-color .2s;
+}
+.month-card:hover{border-color:rgba(255,255,255,0.12);}
+.month-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 18px;cursor:pointer;user-select:none;
+}
+.month-name{font-size:14px;font-weight:500;}
+.month-pills{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.pill{
+  font-size:11px;font-family:'DM Mono',monospace;
+  padding:3px 9px;border-radius:20px;
+  border:1px solid;
+}
+.pill.leave{color:#7CC8FF;background:rgba(124,200,255,0.1);border-color:rgba(124,200,255,0.25);}
+.pill.wfh{color:var(--teal2);background:rgba(0,229,200,0.1);border-color:rgba(0,229,200,0.25);}
+.pill.shortfall{color:var(--rose);background:rgba(255,107,107,0.1);border-color:rgba(255,107,107,0.25);}
+.pill.compoff{color:var(--amber);background:rgba(245,166,35,0.1);border-color:rgba(245,166,35,0.25);}
+.pill.onsite{color:#B4A7FF;background:rgba(180,167,255,0.1);border-color:rgba(180,167,255,0.25);}
+.pill.none{color:var(--text3);background:rgba(255,255,255,0.03);border-color:var(--border);}
+.chevron{
+  color:var(--text3);font-size:14px;transition:transform .25s;
+  line-height:1;flex-shrink:0;margin-left:8px;
+}
+.month-card.open .chevron{transform:rotate(180deg);}
+.month-body{
+  max-height:0;overflow:hidden;
+  transition:max-height .35s cubic-bezier(.23,1,.32,1);
+}
+.month-card.open .month-body{max-height:600px;}
+.month-detail{
+  padding:0 18px 18px;
+  border-top:1px solid var(--border);
+}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;padding-top:14px;}
+.detail-cell{}
+.detail-cell-label{font-size:11px;font-family:'DM Mono',monospace;
+  color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.detail-cell-val{font-size:13px;color:var(--text);line-height:1.5;word-break:break-word;}
+.detail-cell-val.empty{color:var(--text3);font-style:italic;}
+
+/* logout */
+.logout-btn{
+  margin-top:32px;
+  background:none;border:1px solid var(--border);
+  border-radius:var(--r2);padding:9px 18px;
+  font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text3);
+  cursor:pointer;transition:border-color .2s,color .2s;
+}
+.logout-btn:hover{border-color:rgba(255,255,255,0.2);color:var(--text2);}
+
+/* setup banner */
+.setup-banner{
+  background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.25);
+  border-radius:var(--r);padding:14px 18px;margin-bottom:20px;
+  font-size:13px;color:#F5C842;line-height:1.6;
+  display:none;
+}
+.setup-banner code{
+  font-family:'DM Mono',monospace;font-size:12px;
+  background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;
+}
+
+/* animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes dot{0%,80%,100%{transform:scale(.8);opacity:.4}40%{transform:scale(1);opacity:1}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="logo">
+      <div class="logo-mark">T</div>
+      <div>
+        <div class="logo-text">Tetranetics</div>
+        <div class="logo-sub">HR Self-Service</div>
+      </div>
+    </div>
+    <span class="header-tag">Leave Portal</span>
+  </header>
+
+  <!-- ── Login view ── -->
+  <div id="login-view">
+    <div class="login-card">
+      <div class="login-title">Check your leave balance</div>
+      <div class="login-sub">Enter your work email to see your leave summary, balance, and monthly breakdown.</div>
+
+      <div class="error-msg" id="error-msg"></div>
+
+      <div class="input-wrap">
+        <input type="email" id="email-input" placeholder="yourname@tetranetics.com"
+          autocomplete="email" spellcheck="false"
+          onkeydown="if(event.key==='Enter')lookupByEmail()">
+      </div>
+      <button class="btn-primary" onclick="lookupByEmail()">View my leave balance</button>
+
+      <div class="or-sep">or</div>
+
+      <button class="btn-ms" onclick="signInMS()">
+        <svg class="ms-icon" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="9" height="9" fill="#F35325"/>
+          <rect x="11" y="1" width="9" height="9" fill="#81BC06"/>
+          <rect x="1" y="11" width="9" height="9" fill="#05A6F0"/>
+          <rect x="11" y="11" width="9" height="9" fill="#FFBA08"/>
+        </svg>
+        Sign in with Microsoft
+      </button>
+
+      <div class="loading-dots" id="loading-dots">
+        <span></span><span></span><span></span>
+      </div>
+
+      <div class="login-note">
+        Your data is read directly from the HR Excel file.<br>
+        No passwords stored. No data sent to third parties.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Dashboard view ── -->
+  <div id="dash-view">
+
+    <div class="setup-banner" id="setup-banner">
+      ⚙️ <strong>HR Setup:</strong> Replace <code>ONEDRIVE_SHARE_URL</code> at the top of this file's script
+      with the shareable link to your <code>Tetranetics_Attendance_FY2627.xlsx</code> on OneDrive.
+      Until then, demo data is shown.
+    </div>
+
+    <div class="dash-header">
+      <div class="dash-greeting" id="dash-name">Loading…</div>
+      <div class="dash-sub">
+        <span id="dash-dept"></span>
+        &nbsp;·&nbsp;
+        <span id="dash-email" style="color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;"></span>
+      </div>
+      <div class="last-updated" id="dash-updated"></div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card highlight">
+        <div class="kpi-label">Remaining</div>
+        <div class="kpi-value teal" id="kpi-balance">—</div>
+        <div class="kpi-sub">days available</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Leaves taken</div>
+        <div class="kpi-value" id="kpi-taken">—</div>
+        <div class="kpi-sub">this FY</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Comp-offs</div>
+        <div class="kpi-value green" id="kpi-compoff">—</div>
+        <div class="kpi-sub">earned</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Shortfall ded.</div>
+        <div class="kpi-value" id="kpi-shortfall">—</div>
+        <div class="kpi-sub">this FY</div>
+      </div>
+    </div>
+
+    <div class="balance-bar-wrap">
+      <div class="bar-header">
+        <span class="bar-title">Leave balance used</span>
+        <span class="bar-pct" id="bar-pct">—</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" id="bar-fill" style="width:0%"></div>
+      </div>
+      <div class="bar-legend">
+        <span class="bar-leg-item"><span class="bar-leg-dot" style="background:var(--teal)"></span>Remaining</span>
+        <span class="bar-leg-item"><span class="bar-leg-dot" style="background:rgba(255,255,255,0.15)"></span>Used</span>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-title">Month-wise breakdown</span>
+      <button class="toggle-all" onclick="toggleAll()">Expand all</button>
+    </div>
+
+    <div class="month-list" id="month-list"></div>
+
+    <button class="logout-btn" onclick="logout()">← Sign out</button>
+  </div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// CONFIGURATION — HR: replace this with your OneDrive shareable link
+// Steps:
+//   1. Open OneDrive → right-click Tetranetics_Attendance_FY2627.xlsx
+//   2. Share → "Anyone with link can view"
+//   3. Copy the link and paste it below
+// ─────────────────────────────────────────────────────────────────────────────
+const ONEDRIVE_SHARE_URL = "https://tetranetics1-my.sharepoint.com/:x:/g/personal/buvi_g_tetranetics_com/IQCkeUfuyO9yRZmaVCJLiPhHAVm_cDpij6VNPsZIQqKDuOY?e=aEdod7";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Demo data — shown when ONEDRIVE_SHARE_URL is not configured
+// ─────────────────────────────────────────────────────────────────────────────
+const DEMO_DATA = [
+  {
+    EmployeeEmail:"shishir.j@tetranetics.com", EmployeeName:"Shishir Jain",
+    Department:"Tetranalytics", TotalLeavesTakenFY:"6", ShortfallDeductions:"1.5",
+    CompOffsEarned:"2", RemainingBalance:"18.5", BaseLeavesAvailable:"24",
+    LastUpdated:"May 2026",
+    LeaveDatesSummary:"April: 10th,30th | May: 4th,14th-15th",
+    WeeklyShortfallDatesSummary:"May: Days 11–15 (25:05/27:00)",
+    DailyShortfallDatesSummary:"May: 11(Mo) IN 11:14",
+    CompoffDatesSummary:"April: 5th,9th",
+    WFHDatesSummary:"April: 23rd",
+    OnsiteDatesSummary:"None"
+  },
+  {
+    EmployeeEmail:"rohan.g@tetranetics.com", EmployeeName:"Rohan Gaikwad",
+    Department:"Tetranalytics", TotalLeavesTakenFY:"5", ShortfallDeductions:"0.5",
+    CompOffsEarned:"0", RemainingBalance:"19", BaseLeavesAvailable:"24",
+    LastUpdated:"May 2026",
+    LeaveDatesSummary:"April: 14th | May: 18th-22nd",
+    WeeklyShortfallDatesSummary:"May: Days 4–8 (44:36/45:00) | Days 11–15 (44:29/45:00)",
+    DailyShortfallDatesSummary:"May: 5(Tu) IN 11:08, 15(Fr) 5:06h",
+    CompoffDatesSummary:"None",
+    WFHDatesSummary:"None",
+    OnsiteDatesSummary:"None"
+  },
+  {
+    EmployeeEmail:"demo@tetranetics.com", EmployeeName:"Demo Employee",
+    Department:"Telescientific", TotalLeavesTakenFY:"3", ShortfallDeductions:"0",
+    CompOffsEarned:"1", RemainingBalance:"22", BaseLeavesAvailable:"24",
+    LastUpdated:"May 2026",
+    LeaveDatesSummary:"May: 5th,12th,19th",
+    WeeklyShortfallDatesSummary:"None",
+    DailyShortfallDatesSummary:"None",
+    CompoffDatesSummary:"May: 1st",
+    WFHDatesSummary:"April: 15th,22nd | May: 6th",
+    OnsiteDatesSummary:"April: 20th"
+  }
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// State
+const FY_MONTHS = ["April","May","June","July","August","September",
+                   "October","November","December","January","February","March"];
+let allOpenState = false;
+let currentData  = null;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Microsoft SSO (MSAL — opens popup, reads profile, uses email to look up)
+// ─────────────────────────────────────────────────────────────────────────────
+function signInMS() {
+  // MSAL requires an Azure AD app registration. Without it, fall back to email input.
+  showError("Microsoft SSO requires Azure AD app setup. Please enter your email above instead.");
+  document.getElementById('email-input').focus();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Fetch PowerApps_Data from OneDrive share link via Graph API
+// If not configured, use demo data
+// ─────────────────────────────────────────────────────────────────────────────
+async function fetchExcelData() {
+  if (!ONEDRIVE_SHARE_URL || ONEDRIVE_SHARE_URL === "PASTE_YOUR_ONEDRIVE_SHARE_LINK_HERE") {
+    return { data: DEMO_DATA, isDemo: true };
+  }
+  try {
+    // Convert OneDrive share URL to Graph API URL
+    const encoded = btoa(ONEDRIVE_SHARE_URL).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
+    const graphUrl = `https://graph.microsoft.com/v1.0/shares/u!${encoded}/driveItem/workbook/tables/PowerApps_Data/rows`;
+    const res = await fetch(graphUrl);
+    if (!res.ok) throw new Error(`Graph API ${res.status}`);
+    const json = await res.json();
+    // Rows come as arrays; map to objects using first row as header
+    const headerRes = await fetch(graphUrl.replace('/rows','/headerRowRange'));
+    const headerJson = await headerRes.json();
+    const headers = headerJson.values[0];
+    const rows = json.value.map(r => {
+      const obj = {};
+      r.values[0].forEach((v, i) => { obj[headers[i]] = String(v); });
+      return obj;
+    });
+    return { data: rows, isDemo: false };
+  } catch(e) {
+    console.warn("Graph fetch failed:", e.message, "— using demo data");
+    return { data: DEMO_DATA, isDemo: true };
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Lookup by email
+// ─────────────────────────────────────────────────────────────────────────────
+async function lookupByEmail() {
+  const email = document.getElementById('email-input').value.trim().toLowerCase();
+  if (!email || !email.includes('@')) {
+    showError("Please enter a valid email address."); return;
+  }
+  setLoading(true);
+  clearError();
+  try {
+    const { data, isDemo } = await fetchExcelData();
+    const row = data.find(r => (r.EmployeeEmail||'').toLowerCase() === email);
+    if (!row) {
+      setLoading(false);
+      showError("No record found for " + email + ". Please contact HR.");
+      return;
+    }
+    setLoading(false);
+    showDashboard(row, isDemo);
+  } catch(e) {
+    setLoading(false);
+    showError("Could not load data. Please try again.");
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Build and show dashboard
+// ─────────────────────────────────────────────────────────────────────────────
+function showDashboard(row, isDemo) {
+  currentData = row;
+  document.getElementById('login-view').style.display = 'none';
+  const dv = document.getElementById('dash-view');
+  dv.style.display = 'block';
+
+  // Setup banner
+  if (isDemo) document.getElementById('setup-banner').style.display = 'block';
+
+  // Header
+  document.getElementById('dash-name').textContent = row.EmployeeName || 'Employee';
+  const deptEl = document.getElementById('dash-dept');
+  deptEl.innerHTML = `<span class="dash-dept">${row.Department||''}</span>`;
+  document.getElementById('dash-email').textContent = row.EmployeeEmail||'';
+  document.getElementById('dash-updated').textContent = row.LastUpdated ? `Last updated: ${row.LastUpdated}` : '';
+
+  // KPIs
+  const balance   = parseFloat(row.RemainingBalance||0);
+  const taken     = parseFloat(row.TotalLeavesTakenFY||0);
+  const compoff   = parseFloat(row.CompOffsEarned||0);
+  const shortfall = parseFloat(row.ShortfallDeductions||0);
+  const base      = parseFloat(row.BaseLeavesAvailable||24);
+
+  document.getElementById('kpi-balance').textContent   = balance;
+  document.getElementById('kpi-taken').textContent     = taken;
+  document.getElementById('kpi-compoff').textContent   = compoff;
+  document.getElementById('kpi-shortfall').textContent = shortfall;
+
+  // Shortfall color
+  const sfEl = document.getElementById('kpi-shortfall');
+  sfEl.className = 'kpi-value ' + (shortfall > 1 ? 'rose' : shortfall > 0 ? 'amber' : '');
+
+  // Balance bar
+  const usedPct = Math.min(100, Math.round(((base - balance) / base) * 100));
+  const remainPct = 100 - usedPct;
+  setTimeout(() => {
+    const bar = document.getElementById('bar-fill');
+    bar.style.width = remainPct + '%';
+    bar.className = 'bar-fill' + (balance <= 2 ? ' danger' : balance <= 7 ? ' warn' : '');
+    document.getElementById('bar-pct').textContent = remainPct + '% remaining';
+  }, 100);
+
+  // Month breakdown
+  buildMonthList(row);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Month-wise breakdown from summary strings
+// ─────────────────────────────────────────────────────────────────────────────
+function buildMonthList(row) {
+  const list = document.getElementById('month-list');
+  list.innerHTML = '';
+
+  // Parse "April: 10th,30th | May: 4th,14th-15th" into per-month map
+  function parseSummary(str) {
+    if (!str || str === 'None') return {};
+    const map = {};
+    str.split('|').forEach(part => {
+      part = part.trim();
+      const m = part.match(/^(\w+):\s*(.+)/);
+      if (m) map[m[1].trim()] = m[2].trim();
+    });
+    return map;
+  }
+
+  const leaveMap    = parseSummary(row.LeaveDatesSummary);
+  const wkSFMap     = parseSummary(row.WeeklyShortfallDatesSummary);
+  const daySFMap    = parseSummary(row.DailyShortfallDatesSummary);
+  const compoffMap  = parseSummary(row.CompoffDatesSummary);
+  const wfhMap      = parseSummary(row.WFHDatesSummary);
+  const onsiteMap   = parseSummary(row.OnsiteDatesSummary);
+
+  // Only show months that have any data
+  const activeMonths = FY_MONTHS.filter(m =>
+    leaveMap[m] || wkSFMap[m] || daySFMap[m] || compoffMap[m] || wfhMap[m] || onsiteMap[m]
+  );
+
+  if (!activeMonths.length) {
+    list.innerHTML = '<div style="color:var(--text3);font-size:14px;padding:20px 0;">No month-wise data entered yet. Check back after HR updates the records.</div>';
+    return;
+  }
+
+  activeMonths.forEach(month => {
+    const leave   = leaveMap[month];
+    const wkSF    = wkSFMap[month];
+    const daySF   = daySFMap[month];
+    const compoff = compoffMap[month];
+    const wfh     = wfhMap[month];
+    const onsite  = onsiteMap[month];
+
+    const card = document.createElement('div');
+    card.className = 'month-card';
+
+    // Pills
+    const pills = [];
+    if (leave)   pills.push(`<span class="pill leave">📅 ${leave}</span>`);
+    if (wfh)     pills.push(`<span class="pill wfh">🏠 WFH: ${wfh}</span>`);
+    if (compoff) pills.push(`<span class="pill compoff">⊕ Compoff: ${compoff}</span>`);
+    if (onsite)  pills.push(`<span class="pill onsite">📍 Onsite: ${onsite}</span>`);
+    if (wkSF || daySF) pills.push(`<span class="pill shortfall">⚠ Shortfalls</span>`);
+
+    card.innerHTML = `
+      <div class="month-head" onclick="toggleMonth(this.parentElement)">
+        <span class="month-name">${month}</span>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:1;margin:0 12px;justify-content:flex-end;">
+          ${pills.length ? pills.join('') : '<span class="pill none">No activity</span>'}
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="month-body">
+        <div class="month-detail">
+          <div class="detail-grid">
+            ${detailCell('Leave dates', leave)}
+            ${detailCell('WFH dates', wfh)}
+            ${detailCell('Compoff dates', compoff)}
+            ${detailCell('Onsite / client dates', onsite)}
+            ${detailCell('Weekly shortfalls', wkSF)}
+            ${detailCell('Daily shortfalls', daySF)}
+          </div>
+        </div>
+      </div>`;
+
+    list.appendChild(card);
+  });
+}
+
+function detailCell(label, val) {
+  const display = val ? `<div class="detail-cell-val">${val}</div>`
+                      : `<div class="detail-cell-val empty">—</div>`;
+  return `<div class="detail-cell">
+    <div class="detail-cell-label">${label}</div>
+    ${display}
+  </div>`;
+}
+
+function toggleMonth(card) {
+  card.classList.toggle('open');
+}
+
+function toggleAll() {
+  allOpenState = !allOpenState;
+  document.querySelectorAll('.month-card').forEach(c => {
+    c.classList.toggle('open', allOpenState);
+  });
+  document.querySelector('.toggle-all').textContent = allOpenState ? 'Collapse all' : 'Expand all';
+}
+
+function logout() {
+  currentData = null;
+  document.getElementById('dash-view').style.display = 'none';
+  document.getElementById('login-view').style.display = 'block';
+  document.getElementById('email-input').value = '';
+  document.getElementById('setup-banner').style.display = 'none';
+  document.getElementById('month-list').innerHTML = '';
+  clearError();
+}
+
+function setLoading(on) {
+  document.getElementById('loading-dots').style.display = on ? 'flex' : 'none';
+  document.querySelector('.btn-primary').disabled = on;
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg; el.style.display = 'block';
+}
+function clearError() {
+  const el = document.getElementById('error-msg');
+  el.style.display = 'none'; el.textContent = '';
+}
+</script>
+</body>
+</html>
