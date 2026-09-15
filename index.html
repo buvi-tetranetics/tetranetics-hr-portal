@@ -6,30 +6,32 @@
 <title>Tetranetics — Leave Balance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.27.0/lib/msal-browser.min.js"></script>
 <style>
 :root {
-  --navy:    #0D1B2A;
-  --navy2:   #152235;
-  --navy3:   #1E3048;
-  --teal:    #00C2A8;
-  --teal2:   #00E5C8;
-  --amber:   #F5A623;
-  --rose:    #FF6B6B;
-  --green:   #4ECDC4;
-  --text:    #E8EDF2;
-  --text2:   #8FA3B8;
-  --text3:   #5C7A96;
-  --border:  rgba(255,255,255,0.07);
-  --border2: rgba(0,194,168,0.25);
-  --card:    rgba(255,255,255,0.04);
-  --card2:   rgba(255,255,255,0.07);
+  --navy:    #FFFFFF;
+  --navy2:   #FFFFFF;
+  --navy3:   #F1F3F1;
+  --teal:    #1A8C3D;
+  --teal2:   #00A843;
+  --amber:   #B8730C;
+  --rose:    #C0392B;
+  --green:   #1A8C3D;
+  --text:    #151515;
+  --text2:   #5A5A5A;
+  --text3:   #8A8A85;
+  --border:  rgba(21,21,21,0.09);
+  --border2: rgba(26,140,61,0.3);
+  --card:    rgba(21,21,21,0.02);
+  --card2:   rgba(21,21,21,0.04);
+  --lavender: #9B7FC4;
   --r:       12px;
   --r2:      8px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:'DM Sans',sans-serif;
-  background:var(--navy);
+  background:#FAFAF8;
   color:var(--text);
   min-height:100vh;
   overflow-x:hidden;
@@ -40,8 +42,8 @@ body::before{
   content:'';
   position:fixed;inset:0;
   background-image:
-    linear-gradient(rgba(0,194,168,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,194,168,0.03) 1px, transparent 1px);
+    linear-gradient(rgba(26,140,61,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26,140,61,0.04) 1px, transparent 1px);
   background-size:48px 48px;
   pointer-events:none;z-index:0;
 }
@@ -50,7 +52,7 @@ body::after{
   position:fixed;
   top:-200px;right:-200px;
   width:600px;height:600px;
-  background:radial-gradient(circle, rgba(0,194,168,0.08) 0%, transparent 70%);
+  background:radial-gradient(circle, rgba(26,140,61,0.05) 0%, transparent 70%);
   pointer-events:none;z-index:0;
 }
 
@@ -60,20 +62,52 @@ body::after{
 header{display:flex;align-items:center;justify-content:space-between;margin-bottom:48px;}
 .logo{display:flex;align-items:center;gap:10px;}
 .logo-mark{
-  width:36px;height:36px;
-  background:linear-gradient(135deg,var(--teal),var(--teal2));
-  border-radius:10px;
+  width:34px;height:34px;
   display:flex;align-items:center;justify-content:center;
-  font-family:'DM Mono',monospace;font-size:14px;font-weight:500;
-  color:var(--navy);
+  flex-shrink:0;
 }
-.logo-text{font-size:15px;font-weight:600;letter-spacing:-.01em;color:var(--text);}
+.logo-mark svg{width:100%;height:100%;}
+.logo-text{font-size:16px;font-weight:600;letter-spacing:-.01em;color:var(--text);}
 .logo-sub{font-size:11px;color:var(--text3);margin-top:1px;}
 .header-tag{
   font-size:11px;font-family:'DM Mono',monospace;
-  color:var(--teal);background:rgba(0,194,168,0.1);
-  border:1px solid rgba(0,194,168,0.2);
+  color:var(--teal);background:rgba(26,140,61,0.08);
+  border:1px solid rgba(26,140,61,0.2);
   padding:4px 10px;border-radius:20px;
+}
+.nav-pills{display:flex;gap:6px;}
+.nav-pill{
+  font-size:13px;font-weight:500;padding:7px 16px;border-radius:20px;
+  cursor:pointer;border:1px solid var(--border);background:transparent;
+  color:var(--text2);transition:all .2s;font-family:'DM Sans',sans-serif;
+}
+.nav-pill:hover{color:var(--text);border-color:rgba(21,21,21,0.18);}
+.nav-pill.active{background:var(--teal);color:#FFFFFF;border-color:var(--teal);}
+.holiday-list{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+.holiday-card{
+  background:var(--navy2);border:1px solid var(--border);
+  border-radius:var(--r);padding:14px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:border-color .2s;
+  box-shadow:0 1px 2px rgba(21,21,21,0.04);
+}
+.holiday-card:hover{border-color:rgba(21,21,21,0.16);}
+.holiday-card.past{opacity:.45;}
+.holiday-date-badge{
+  display:flex;flex-direction:column;align-items:center;
+  background:rgba(26,140,61,0.08);border:1px solid rgba(26,140,61,0.25);
+  border-radius:8px;padding:6px 14px;min-width:54px;
+}
+.holiday-date-badge .day{font-size:18px;font-weight:600;color:var(--teal2);line-height:1;}
+.holiday-date-badge .mon{font-size:10px;font-family:'DM Mono',monospace;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+.holiday-info{flex:1;margin-left:16px;}
+.holiday-name{font-size:14px;font-weight:500;margin-bottom:2px;}
+.holiday-weekday{font-size:12px;color:var(--text3);}
+.holiday-badge-upcoming{
+  font-size:11px;font-family:'DM Mono',monospace;color:var(--amber);
+  background:rgba(184,115,12,0.08);border:1px solid rgba(184,115,12,0.22);
+  padding:3px 9px;border-radius:20px;
 }
 
 /* ── login card ── */
@@ -92,14 +126,14 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 .input-wrap{position:relative;margin-bottom:14px;}
 .input-wrap input{
   width:100%;
-  background:rgba(255,255,255,0.05);
+  background:rgba(21,21,21,0.03);
   border:1px solid var(--border);
   border-radius:var(--r2);
   padding:13px 16px;
   font-family:'DM Sans',sans-serif;font-size:14px;
   color:var(--text);outline:none;transition:border-color .2s;
 }
-.input-wrap input:focus{border-color:rgba(0,194,168,0.5);}
+.input-wrap input:focus{border-color:rgba(26,140,61,0.5);}
 .input-wrap input::placeholder{color:var(--text3);}
 .btn-primary{
   width:100%;padding:13px;
@@ -119,7 +153,7 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 .or-sep::before{left:0}.or-sep::after{right:0}
 .btn-ms{
   width:100%;padding:12px;
-  background:rgba(255,255,255,0.05);
+  background:rgba(21,21,21,0.03);
   border:1px solid var(--border);
   border-radius:var(--r2);
   font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
@@ -127,13 +161,13 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
   display:flex;align-items:center;justify-content:center;gap:8px;
   transition:background .2s,border-color .2s;
 }
-.btn-ms:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);}
+.btn-ms:hover{background:rgba(21,21,21,0.06);border-color:rgba(21,21,21,0.18);}
 .ms-icon{width:16px;height:16px;flex-shrink:0;}
 .login-note{margin-top:20px;font-size:12px;color:var(--text3);text-align:center;line-height:1.6;}
 .error-msg{
-  background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.25);
+  background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.22);
   border-radius:var(--r2);padding:10px 14px;
-  font-size:13px;color:#FF8F8F;margin-bottom:14px;display:none;
+  font-size:13px;color:#C0392B;margin-bottom:14px;display:none;
 }
 .loading-dots{display:none;justify-content:center;gap:6px;padding:16px 0;}
 .loading-dots span{
@@ -152,8 +186,8 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 .dash-dept{
   display:inline-block;margin-left:8px;
   font-size:11px;font-family:'DM Mono',monospace;
-  color:var(--teal);background:rgba(0,194,168,0.1);
-  border:1px solid rgba(0,194,168,0.2);
+  color:var(--teal);background:rgba(26,140,61,0.08);
+  border:1px solid rgba(26,140,61,0.2);
   padding:2px 8px;border-radius:20px;vertical-align:middle;
 }
 .last-updated{font-size:12px;color:var(--text3);margin-top:6px;}
@@ -165,11 +199,12 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
   background:var(--navy2);border:1px solid var(--border);
   border-radius:var(--r);padding:18px 18px 16px;
   transition:border-color .2s,transform .2s;
+  box-shadow:0 1px 2px rgba(21,21,21,0.04);
 }
-.kpi-card:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-1px);}
+.kpi-card:hover{border-color:rgba(21,21,21,0.16);transform:translateY(-1px);}
 .kpi-card.highlight{
-  background:linear-gradient(135deg,rgba(0,194,168,0.12),rgba(0,229,200,0.06));
-  border-color:rgba(0,194,168,0.3);
+  background:linear-gradient(135deg,rgba(26,140,61,0.1),rgba(0,168,67,0.05));
+  border-color:rgba(26,140,61,0.28);
 }
 .kpi-label{font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);
   text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
@@ -184,15 +219,16 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 .balance-bar-wrap{
   background:var(--navy2);border:1px solid var(--border);
   border-radius:var(--r);padding:20px 22px;margin-bottom:20px;
+  box-shadow:0 1px 2px rgba(21,21,21,0.04);
 }
 .bar-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;}
 .bar-title{font-size:13px;font-weight:500;color:var(--text2);}
 .bar-pct{font-size:13px;font-family:'DM Mono',monospace;color:var(--teal);}
-.bar-track{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;}
+.bar-track{height:6px;background:rgba(21,21,21,0.08);border-radius:3px;overflow:hidden;}
 .bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--teal2));
   transition:width 1s cubic-bezier(.23,1,.32,1);}
-.bar-fill.warn{background:linear-gradient(90deg,var(--amber),#FFD166);}
-.bar-fill.danger{background:linear-gradient(90deg,var(--rose),#FF8E8E);}
+.bar-fill.warn{background:linear-gradient(90deg,var(--amber),#D99B3D);}
+.bar-fill.danger{background:linear-gradient(90deg,var(--rose),#D9695C);}
 .bar-legend{display:flex;gap:20px;margin-top:10px;}
 .bar-leg-item{font-size:12px;color:var(--text3);display:flex;align-items:center;gap:5px;}
 .bar-leg-dot{width:8px;height:8px;border-radius:2px;}
@@ -219,8 +255,9 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
   background:var(--navy2);border:1px solid var(--border);
   border-radius:var(--r);overflow:hidden;
   transition:border-color .2s;
+  box-shadow:0 1px 2px rgba(21,21,21,0.04);
 }
-.month-card:hover{border-color:rgba(255,255,255,0.12);}
+.month-card:hover{border-color:rgba(21,21,21,0.14);}
 .month-head{
   display:flex;align-items:center;justify-content:space-between;
   padding:16px 18px;cursor:pointer;user-select:none;
@@ -232,12 +269,12 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
   padding:3px 9px;border-radius:20px;
   border:1px solid;
 }
-.pill.leave{color:#7CC8FF;background:rgba(124,200,255,0.1);border-color:rgba(124,200,255,0.25);}
-.pill.wfh{color:var(--teal2);background:rgba(0,229,200,0.1);border-color:rgba(0,229,200,0.25);}
-.pill.shortfall{color:var(--rose);background:rgba(255,107,107,0.1);border-color:rgba(255,107,107,0.25);}
-.pill.compoff{color:var(--amber);background:rgba(245,166,35,0.1);border-color:rgba(245,166,35,0.25);}
-.pill.onsite{color:#B4A7FF;background:rgba(180,167,255,0.1);border-color:rgba(180,167,255,0.25);}
-.pill.none{color:var(--text3);background:rgba(255,255,255,0.03);border-color:var(--border);}
+.pill.leave{color:#1565C0;background:rgba(21,101,192,0.08);border-color:rgba(21,101,192,0.22);}
+.pill.wfh{color:var(--teal2);background:rgba(0,168,67,0.08);border-color:rgba(0,168,67,0.25);}
+.pill.shortfall{color:var(--rose);background:rgba(192,57,43,0.08);border-color:rgba(192,57,43,0.22);}
+.pill.compoff{color:var(--amber);background:rgba(184,115,12,0.08);border-color:rgba(184,115,12,0.22);}
+.pill.onsite{color:#6B4FA0;background:rgba(155,127,196,0.1);border-color:rgba(155,127,196,0.28);}
+.pill.none{color:var(--text3);background:rgba(21,21,21,0.03);border-color:var(--border);}
 .chevron{
   color:var(--text3);font-size:14px;transition:transform .25s;
   line-height:1;flex-shrink:0;margin-left:8px;
@@ -267,13 +304,13 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
   font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text3);
   cursor:pointer;transition:border-color .2s,color .2s;
 }
-.logout-btn:hover{border-color:rgba(255,255,255,0.2);color:var(--text2);}
+.logout-btn:hover{border-color:rgba(21,21,21,0.2);color:var(--text2);}
 
 /* setup banner */
 .setup-banner{
-  background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.25);
+  background:rgba(184,115,12,0.08);border:1px solid rgba(184,115,12,0.22);
   border-radius:var(--r);padding:14px 18px;margin-bottom:20px;
-  font-size:13px;color:#F5C842;line-height:1.6;
+  font-size:13px;color:#8A6200;line-height:1.6;
   display:none;
 }
 .setup-banner code{
@@ -291,13 +328,26 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 
   <header>
     <div class="logo">
-      <div class="logo-mark">T</div>
+      <div class="logo-mark">
+        <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="16" fill="none" stroke="#1A1A1A" stroke-width="1.4"/>
+          <ellipse cx="20" cy="20" rx="16" ry="7" fill="none" stroke="#1A1A1A" stroke-width="1.4" transform="rotate(35 20 20)"/>
+          <ellipse cx="20" cy="20" rx="16" ry="7" fill="none" stroke="#1A1A1A" stroke-width="1.4" transform="rotate(-35 20 20)"/>
+          <circle cx="20" cy="4" r="2.6" fill="#1A8C3D"/>
+          <circle cx="7" cy="13" r="2.6" fill="#1A8C3D"/>
+          <circle cx="33" cy="13" r="2.6" fill="#9B7FC4"/>
+          <circle cx="20" cy="20" r="3.2" fill="#1A1A1A"/>
+        </svg>
+      </div>
       <div>
         <div class="logo-text">Tetranetics</div>
         <div class="logo-sub">HR Self-Service</div>
       </div>
     </div>
-    <span class="header-tag">Leave Portal</span>
+    <div class="nav-pills">
+      <button class="nav-pill active" id="nav-leave" onclick="switchView('leave')">My leave</button>
+      <button class="nav-pill" id="nav-holidays" onclick="switchView('holidays')">Holidays</button>
+    </div>
   </header>
 
   <!-- ── Login view ── -->
@@ -317,24 +367,38 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 
       <div class="or-sep">or</div>
 
-      <button class="btn-ms" onclick="signInMS()">
+      <button class="btn-ms" id="btn-ms" onclick="signInMS()">
         <svg class="ms-icon" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="1" y="1" width="9" height="9" fill="#F35325"/>
           <rect x="11" y="1" width="9" height="9" fill="#81BC06"/>
           <rect x="1" y="11" width="9" height="9" fill="#05A6F0"/>
           <rect x="11" y="11" width="9" height="9" fill="#FFBA08"/>
         </svg>
-        Sign in with Microsoft
+        <span id="ms-btn-label">Sign in with Microsoft</span>
       </button>
+      <script>
+        // Runs immediately — updates UI based on SSO config before page fully loads
+        if (typeof SSO_ENABLED !== "undefined" && !SSO_ENABLED) {
+          document.getElementById("ms-btn-label").textContent = "Sign in with Microsoft (setup required)";
+          document.getElementById("btn-ms").style.opacity = "0.5";
+        }
+      </script>
 
       <div class="loading-dots" id="loading-dots">
         <span></span><span></span><span></span>
       </div>
 
-      <div class="login-note">
-        Your data is read directly from the HR Excel file.<br>
+      <div class="login-note" id="login-note">
+        Sign in with Microsoft for secure access — only your own data is shown.<br>
         No passwords stored. No data sent to third parties.
       </div>
+      <script>
+        if (typeof SSO_ENABLED !== "undefined" && !SSO_ENABLED) {
+          document.getElementById("login-note").innerHTML =
+            "Enter your work email to view your leave summary.<br>" +
+            "<span style=\"color:var(--rose);\">⚠ Email-only mode — for testing only. Set up Microsoft SSO for production.</span>";
+        }
+      </script>
     </div>
   </div>
 
@@ -342,9 +406,8 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
   <div id="dash-view">
 
     <div class="setup-banner" id="setup-banner">
-      ⚙️ <strong>HR Setup:</strong> Replace <code>ONEDRIVE_SHARE_URL</code> at the top of this file's script
-      with the shareable link to your <code>Tetranetics_Attendance_FY2627.xlsx</code> on OneDrive.
-      Until then, demo data is shown.
+      ⚙️ <strong>Demo mode:</strong> Upload <code>powerapps_data.csv</code> (generated by the attendance script)
+      to your GitHub repo, then update <code>CSV_URL</code> in this file. Until then, demo data is shown.
     </div>
 
     <div class="dash-header">
@@ -390,7 +453,7 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
       </div>
       <div class="bar-legend">
         <span class="bar-leg-item"><span class="bar-leg-dot" style="background:var(--teal)"></span>Remaining</span>
-        <span class="bar-leg-item"><span class="bar-leg-dot" style="background:rgba(255,255,255,0.15)"></span>Used</span>
+        <span class="bar-leg-item"><span class="bar-leg-dot" style="background:rgba(21,21,21,0.12)"></span>Used</span>
       </div>
     </div>
 
@@ -404,17 +467,45 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
     <button class="logout-btn" onclick="logout()">← Sign out</button>
   </div>
 
+  <!-- ── Holiday Calendar view (common to all employees, no login needed) ── -->
+  <div id="holiday-view" style="display:none">
+    <div class="dash-header">
+      <div class="dash-greeting">Company holiday calendar</div>
+      <div class="dash-sub">FY 2026–27 — common to all employees</div>
+    </div>
+    <div class="setup-banner" id="holiday-setup-banner">
+      ⚙️ <strong>Demo mode:</strong> Upload <code>holidays.csv</code> (generated by the attendance script)
+      to your GitHub repo, then update <code>HOLIDAYS_CSV_URL</code> in this file.
+    </div>
+    <div class="holiday-list" id="holiday-list"></div>
+  </div>
+
 </div>
 
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
-// CONFIGURATION — HR: replace this with your OneDrive shareable link
-// Steps:
-//   1. Open OneDrive → right-click Tetranetics_Attendance_FY2627.xlsx
-//   2. Share → "Anyone with link can view"
-//   3. Copy the link and paste it below
+// CONFIGURATION — fill in after Azure AD app registration
 // ─────────────────────────────────────────────────────────────────────────────
-const ONEDRIVE_SHARE_URL = "https://tetranetics1-my.sharepoint.com/:x:/g/personal/buvi_g_tetranetics_com/IQCkeUfuyO9yRZmaVCJLiPhHAVm_cDpij6VNPsZIQqKDuOY?e=aEdod7";
+const CSV_URL     = "https://raw.githubusercontent.com/buvi-tetranetics/tetranetics-hr-portal/main/powerapps_data.csv";
+const HOLIDAYS_CSV_URL = "https://raw.githubusercontent.com/buvi-tetranetics/tetranetics-hr-portal/main/holidays.csv";
+const CLIENT_ID   = "PASTE_YOUR_APPLICATION_CLIENT_ID_HERE";   // from Azure AD app overview
+const TENANT_ID   = "PASTE_YOUR_DIRECTORY_TENANT_ID_HERE";     // from Azure AD app overview
+const REDIRECT_URI = window.location.href.split("?")[0].split("#")[0]; // auto-detects local or GitHub Pages
+
+// SSO enabled when CLIENT_ID is configured; falls back to email-only when not
+const SSO_ENABLED = CLIENT_ID !== "PASTE_YOUR_APPLICATION_CLIENT_ID_HERE";
+
+// Demo holiday data — shown when HOLIDAYS_CSV_URL is not configured
+const DEMO_HOLIDAYS = [
+  { Date: "2026-01-26", HolidayName: "Republic Day" },
+  { Date: "2026-03-14", HolidayName: "Holi" },
+  { Date: "2026-04-14", HolidayName: "Ambedkar Jayanti" },
+  { Date: "2026-08-15", HolidayName: "Independence Day" },
+  { Date: "2026-08-26", HolidayName: "Ganesh Chaturthi" },
+  { Date: "2026-10-02", HolidayName: "Gandhi Jayanti" },
+  { Date: "2026-10-20", HolidayName: "Diwali" },
+  { Date: "2026-12-25", HolidayName: "Christmas" },
+];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Demo data — shown when ONEDRIVE_SHARE_URL is not configured
@@ -455,6 +546,18 @@ const DEMO_DATA = [
     CompoffDatesSummary:"May: 1st",
     WFHDatesSummary:"April: 15th,22nd | May: 6th",
     OnsiteDatesSummary:"April: 20th"
+  },
+  {
+    EmployeeEmail:"buvi.g@tetranetics.com", EmployeeName:"Buvaneswari G",
+    Department:"Tetranalytics", TotalLeavesTakenFY:"4", ShortfallDeductions:"0",
+    CompOffsEarned:"0", RemainingBalance:"20", BaseLeavesAvailable:"24",
+    LastUpdated:"May 2026",
+    LeaveDatesSummary:"April: 8th,9th | May: 16th,17th",
+    WeeklyShortfallDatesSummary:"None",
+    DailyShortfallDatesSummary:"April: 30(Th) IN 11:22",
+    CompoffDatesSummary:"None",
+    WFHDatesSummary:"May: 13th",
+    OnsiteDatesSummary:"None"
   }
 ];
 
@@ -466,43 +569,136 @@ let allOpenState = false;
 let currentData  = null;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Microsoft SSO (MSAL — opens popup, reads profile, uses email to look up)
+// Microsoft SSO via MSAL
 // ─────────────────────────────────────────────────────────────────────────────
-function signInMS() {
-  // MSAL requires an Azure AD app registration. Without it, fall back to email input.
-  showError("Microsoft SSO requires Azure AD app setup. Please enter your email above instead.");
-  document.getElementById('email-input').focus();
+let msalApp = null;
+
+function initMSAL() {
+  if (!SSO_ENABLED || msalApp) return;
+  try {
+    msalApp = new msal.PublicClientApplication({
+      auth: {
+        clientId:   CLIENT_ID,
+        authority:  `https://login.microsoftonline.com/${TENANT_ID}`,
+        redirectUri: REDIRECT_URI,
+      },
+      cache: { cacheLocation: "sessionStorage" },
+    });
+    msalApp.initialize();
+  } catch(e) {
+    console.warn("MSAL init failed:", e.message);
+    msalApp = null;
+  }
 }
+
+async function signInMS() {
+  if (!SSO_ENABLED) {
+    showError("SSO not configured yet. Please enter your email above.");
+    document.getElementById("email-input").focus();
+    return;
+  }
+  initMSAL();
+  if (!msalApp) {
+    showError("SSO unavailable. Please enter your email above.");
+    return;
+  }
+  setLoading(true); clearError();
+  try {
+    // Try silent first (already signed in)
+    let account = msalApp.getAllAccounts()[0];
+    let result;
+    if (account) {
+      result = await msalApp.acquireTokenSilent({ scopes:["User.Read"], account });
+    } else {
+      result = await msalApp.loginPopup({ scopes:["User.Read"],
+        prompt: "select_account" });
+    }
+    const email = result.account.username.toLowerCase();
+    const { data, isDemo } = await fetchExcelData();
+    const row = data.find(r => (r.EmployeeEmail||"").toLowerCase() === email);
+    setLoading(false);
+    if (!row) {
+      showError(`No record found for ${email}. Please contact HR.`);
+      return;
+    }
+    showDashboard(row, isDemo, result.account.name || row.EmployeeName);
+  } catch(e) {
+    setLoading(false);
+    if (e.errorCode === "user_cancelled") {
+      clearError();
+    } else {
+      showError("Sign-in failed: " + (e.message || e.errorCode || "unknown error"));
+    }
+  }
+}
+
+// Check if already signed in on page load
+window.addEventListener("load", async () => {
+  initMSAL();
+  if (!msalApp) return;
+  const accounts = msalApp.getAllAccounts();
+  if (!accounts.length) return;
+  try {
+    const result = await msalApp.acquireTokenSilent({ scopes:["User.Read"], account: accounts[0] });
+    const email = result.account.username.toLowerCase();
+    const { data, isDemo } = await fetchExcelData();
+    const row = data.find(r => (r.EmployeeEmail||"").toLowerCase() === email);
+    if (row) showDashboard(row, isDemo, result.account.name || row.EmployeeName);
+  } catch(e) { /* silent fail — user sees login page */ }
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Fetch PowerApps_Data from OneDrive share link via Graph API
 // If not configured, use demo data
 // ─────────────────────────────────────────────────────────────────────────────
 async function fetchExcelData() {
-  if (!ONEDRIVE_SHARE_URL || ONEDRIVE_SHARE_URL === "PASTE_YOUR_ONEDRIVE_SHARE_LINK_HERE") {
+  if (!CSV_URL || CSV_URL.includes("YOUR_USERNAME")) {
     return { data: DEMO_DATA, isDemo: true };
   }
   try {
-    // Convert OneDrive share URL to Graph API URL
-    const encoded = btoa(ONEDRIVE_SHARE_URL).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
-    const graphUrl = `https://graph.microsoft.com/v1.0/shares/u!${encoded}/driveItem/workbook/tables/PowerApps_Data/rows`;
-    const res = await fetch(graphUrl);
-    if (!res.ok) throw new Error(`Graph API ${res.status}`);
-    const json = await res.json();
-    // Rows come as arrays; map to objects using first row as header
-    const headerRes = await fetch(graphUrl.replace('/rows','/headerRowRange'));
-    const headerJson = await headerRes.json();
-    const headers = headerJson.values[0];
-    const rows = json.value.map(r => {
-      const obj = {};
-      r.values[0].forEach((v, i) => { obj[headers[i]] = String(v); });
-      return obj;
-    });
+    const res = await fetch(CSV_URL + "?t=" + Date.now()); // cache bust
+    if (!res.ok) throw new Error(`CSV fetch ${res.status}`);
+    const text = await res.text();
+    const rows = parseCSV(text);
+    if (!rows.length) throw new Error("Empty CSV");
     return { data: rows, isDemo: false };
   } catch(e) {
-    console.warn("Graph fetch failed:", e.message, "— using demo data");
+    console.warn("CSV fetch failed:", e.message, "— using demo data");
     return { data: DEMO_DATA, isDemo: true };
   }
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/);
+  if (lines.length < 2) return [];
+  // Auto-detect delimiter: tab-separated or comma-separated
+  const delimiter = lines[0].includes('\t') ? '\t' : ',';
+  const headers = parseCSVLine(lines[0], delimiter);
+  return lines.slice(1).map(line => {
+    const vals = parseCSVLine(line, delimiter);
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = (vals[i] || "").trim(); });
+    return obj;
+  }).filter(r => r.EmployeeEmail || r.EmployeeName);
+}
+
+function parseCSVLine(line, delimiter) {
+  delimiter = delimiter || ',';
+  // For tab-separated, just split on tabs (no quoting needed)
+  if (delimiter === '\t') return line.split('\t');
+  const out = []; let cur = ""; let inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"' && !inQ) { inQ = true; continue; }
+    if (c === '"' && inQ) {
+      if (line[i+1] === '"') { cur += '"'; i++; } else inQ = false;
+      continue;
+    }
+    if (c === ',' && !inQ) { out.push(cur); cur = ""; continue; }
+    cur += c;
+  }
+  out.push(cur);
+  return out;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -524,7 +720,7 @@ async function lookupByEmail() {
       return;
     }
     setLoading(false);
-    showDashboard(row, isDemo);
+    showDashboard(row, isDemo, null);
   } catch(e) {
     setLoading(false);
     showError("Could not load data. Please try again.");
@@ -534,7 +730,7 @@ async function lookupByEmail() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Build and show dashboard
 // ─────────────────────────────────────────────────────────────────────────────
-function showDashboard(row, isDemo) {
+function showDashboard(row, isDemo, displayName) {
   currentData = row;
   document.getElementById('login-view').style.display = 'none';
   const dv = document.getElementById('dash-view');
@@ -544,7 +740,7 @@ function showDashboard(row, isDemo) {
   if (isDemo) document.getElementById('setup-banner').style.display = 'block';
 
   // Header
-  document.getElementById('dash-name').textContent = row.EmployeeName || 'Employee';
+  document.getElementById('dash-name').textContent = displayName || row.EmployeeName || 'Employee';
   const deptEl = document.getElementById('dash-dept');
   deptEl.innerHTML = `<span class="dash-dept">${row.Department||''}</span>`;
   document.getElementById('dash-email').textContent = row.EmployeeEmail||'';
@@ -689,6 +885,14 @@ function logout() {
   document.getElementById('setup-banner').style.display = 'none';
   document.getElementById('month-list').innerHTML = '';
   clearError();
+  // Sign out of MSAL session
+  if (msalApp) {
+    const accounts = msalApp.getAllAccounts();
+    if (accounts.length) {
+      msalApp.logoutPopup({ account: accounts[0], mainWindowRedirectUri: REDIRECT_URI })
+        .catch(() => {/* silent */});
+    }
+  }
 }
 
 function setLoading(on) {
@@ -703,6 +907,103 @@ function showError(msg) {
 function clearError() {
   const el = document.getElementById('error-msg');
   el.style.display = 'none'; el.textContent = '';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// View switching — "leave" (login or dashboard) vs "holidays" (common calendar)
+// ─────────────────────────────────────────────────────────────────────────────
+let wasLoggedIn = false;
+
+function switchView(view) {
+  document.getElementById('nav-leave').classList.toggle('active', view === 'leave');
+  document.getElementById('nav-holidays').classList.toggle('active', view === 'holidays');
+
+  if (view === 'holidays') {
+    wasLoggedIn = document.getElementById('dash-view').style.display === 'block';
+    document.getElementById('login-view').style.display = 'none';
+    document.getElementById('dash-view').style.display = 'none';
+    document.getElementById('holiday-view').style.display = 'block';
+    loadHolidays();
+  } else {
+    document.getElementById('holiday-view').style.display = 'none';
+    if (wasLoggedIn && currentData) {
+      document.getElementById('dash-view').style.display = 'block';
+    } else {
+      document.getElementById('login-view').style.display = 'block';
+    }
+  }
+}
+
+async function fetchHolidays() {
+  if (!HOLIDAYS_CSV_URL || HOLIDAYS_CSV_URL.includes("YOUR_USERNAME")) {
+    return { data: DEMO_HOLIDAYS, isDemo: true };
+  }
+  try {
+    const res = await fetch(HOLIDAYS_CSV_URL + "?t=" + Date.now());
+    if (!res.ok) throw new Error(`Holidays fetch ${res.status}`);
+    const text = await res.text();
+    const rows = parseCSV(text);
+    if (!rows.length) throw new Error("Empty holidays CSV");
+    return { data: rows, isDemo: false };
+  } catch(e) {
+    console.warn("Holidays fetch failed:", e.message, "— using demo data");
+    return { data: DEMO_HOLIDAYS, isDemo: true };
+  }
+}
+
+let holidaysLoaded = false;
+
+async function loadHolidays() {
+  if (holidaysLoaded) return; // cache — calendar doesn't change per visit
+  const listEl = document.getElementById('holiday-list');
+  listEl.innerHTML = '<div style="color:var(--text3);font-size:14px;padding:20px 0;">Loading holidays…</div>';
+  const { data, isDemo } = await fetchHolidays();
+  document.getElementById('holiday-setup-banner').style.display = isDemo ? 'block' : 'none';
+  renderHolidays(data);
+  holidaysLoaded = true;
+}
+
+function renderHolidays(holidays) {
+  const listEl = document.getElementById('holiday-list');
+  listEl.innerHTML = '';
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const WEEKDAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+  const sorted = [...holidays]
+    .filter(h => h.Date && h.HolidayName)
+    .map(h => ({ ...h, dateObj: new Date(h.Date + "T00:00:00") }))
+    .sort((a, b) => a.dateObj - b.dateObj);
+
+  if (!sorted.length) {
+    listEl.innerHTML = '<div style="color:var(--text3);font-size:14px;padding:20px 0;">No holidays configured yet.</div>';
+    return;
+  }
+
+  // Find the next upcoming holiday to highlight
+  const nextUpcoming = sorted.find(h => h.dateObj >= today);
+
+  sorted.forEach(h => {
+    const isPast = h.dateObj < today;
+    const isNext = nextUpcoming && h.dateObj.getTime() === nextUpcoming.dateObj.getTime();
+    const card = document.createElement('div');
+    card.className = 'holiday-card' + (isPast ? ' past' : '');
+    card.innerHTML = `
+      <div style="display:flex;align-items:center">
+        <div class="holiday-date-badge">
+          <span class="day">${h.dateObj.getDate()}</span>
+          <span class="mon">${MONTH_NAMES[h.dateObj.getMonth()]}</span>
+        </div>
+        <div class="holiday-info">
+          <div class="holiday-name">${h.HolidayName}</div>
+          <div class="holiday-weekday">${WEEKDAY_NAMES[h.dateObj.getDay()]} · ${h.dateObj.getFullYear()}</div>
+        </div>
+      </div>
+      ${isNext ? '<span class="holiday-badge-upcoming">Next up</span>' : ''}
+    `;
+    listEl.appendChild(card);
+  });
 }
 </script>
 </body>
