@@ -498,8 +498,9 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 // ─────────────────────────────────────────────────────────────────────────────
 // CONFIGURATION — fill in after Azure AD app registration
 // ─────────────────────────────────────────────────────────────────────────────
-const CSV_URL     = "https://raw.githubusercontent.com/buvi-tetranetics/tetranetics-hr-portal/main/powerapps_data.csv";
-const HOLIDAYS_CSV_URL = "https://raw.githubusercontent.com/buvi-tetranetics/tetranetics-hr-portal/main/holidays.csv";
+const CSV_URL           = "https://raw.githubusercontent.com/buvi-tetranetics/tetranetics-hr-portal/main/powerapps_data.csv";
+const HOLIDAYS_CSV_URL  = "https://raw.githubusercontent.com/buvi-tetranetics/tetranetics-hr-portal/main/holidays.csv";
+const DAILY_PUNCH_URL   = "https://raw.githubusercontent.com/buvi-tetranetics/tetranetics-hr-portal/main/daily_punch.csv";
 const CLIENT_ID   = "PASTE_YOUR_APPLICATION_CLIENT_ID_HERE";   // from Azure AD app overview
 const TENANT_ID   = "PASTE_YOUR_DIRECTORY_TENANT_ID_HERE";     // from Azure AD app overview
 const REDIRECT_URI = window.location.href.split("?")[0].split("#")[0]; // auto-detects local or GitHub Pages
@@ -1037,12 +1038,41 @@ function renderHolidays(holidays) {
 // to compute daily present/leave/WFH/onsite counts
 // ─────────────────────────────────────────────────────────────────────────────
 let allEmployeeData = null;
+let dailyPunchData  = null;   // { "2026-09-07": { "Shishir Jain": "Leave", ... }, ... }
 
 async function ensureAllData() {
   if (allEmployeeData) return allEmployeeData;
   const { data } = await fetchExcelData();
   allEmployeeData = data;
   return data;
+}
+
+async function ensurePunchData() {
+  if (dailyPunchData) return dailyPunchData;
+  try {
+    const res = await fetch(DAILY_PUNCH_URL + "?t=" + Date.now());
+    if (!res.ok) throw new Error("not found");
+    const text = await res.text();
+    const lines = text.trim().split(/\r?\n/);
+    const delim = lines[0].includes("\t") ? "\t" : ",";
+    const headers = lines[0].split(delim);
+    const map = {};
+    lines.slice(1).forEach(line => {
+      const vals = line.split(delim);
+      const row = {};
+      headers.forEach((h,i) => { row[h.trim()] = (vals[i]||"").trim(); });
+      const dt = row.Date; const emp = row.EmployeeName; const st = row.Status;
+      if (dt && emp) {
+        if (!map[dt]) map[dt] = {};
+        map[dt][emp] = st;
+      }
+    });
+    dailyPunchData = map;
+  } catch(e) {
+    dailyPunchData = {};
+    console.warn("daily_punch.csv not available:", e.message);
+  }
+  return dailyPunchData;
 }
 
 function parseMonthDates(summaryStr, month) {
@@ -1068,7 +1098,12 @@ function parseMonthDates(summaryStr, month) {
   return days;
 }
 
-function getEmployeeStatusOnDay(row, month, day) {
+function getEmployeeStatusOnDay(row, month, day, punchMap, dateStr) {
+  // 1. Check daily_punch.csv first (most authoritative)
+  if (punchMap && dateStr && punchMap[dateStr] && punchMap[dateStr][row.EmployeeName]) {
+    return punchMap[dateStr][row.EmployeeName];
+  }
+  // 2. Fall back to leave summary strings
   const leaveDays  = parseMonthDates(row.LeaveDatesSummary, month);
   const wfhDays    = parseMonthDates(row.WFHDatesSummary, month);
   const onsiteDays = parseMonthDates(row.OnsiteDatesSummary, month);
@@ -1082,30 +1117,42 @@ function getEmployeeStatusOnDay(row, month, day) {
   return 'Present';
 }
 
-function getDayStats(employees, month, day) {
-  const cats = { Leave:[], 'Half-day Leave':[], WFH:[], 'Half-day WFH':[], Onsite:[], Present:[] };
+function getDayStats(employees, month, day, punchMap, dateStr) {
+  const cats = { 'Punched In':[], 'Not Punched In':[], Leave:[], 'Half-day Leave':[], WFH:[], 'Half-day WFH':[], Onsite:[] };
   employees.forEach(row => {
-    const status = getEmployeeStatusOnDay(row, month, day);
-    cats[status].push(row.EmployeeName || row.EmployeeEmail);
+    const status = getEmployeeStatusOnDay(row, month, day, punchMap, dateStr);
+    if (cats[status] !== undefined) cats[status].push(row.EmployeeName || row.EmployeeEmail);
+    else cats['Punched In'].push(row.EmployeeName || row.EmployeeEmail);
   });
   return cats;
 }
 
 function formatDaySummary(cats, compact) {
-  const total = Object.values(cats).flat().length;
   const parts = [];
-  if (cats.Leave.length)             parts.push(`<span style="color:var(--rose)">Leave (${cats.Leave.length}): ${cats.Leave.join(', ')}</span>`);
-  if (cats['Half-day Leave'].length) parts.push(`<span style="color:var(--amber)">Half-day Leave (${cats['Half-day Leave'].length}): ${cats['Half-day Leave'].join(', ')}</span>`);
-  if (cats.WFH.length)               parts.push(`<span style="color:var(--teal)">WFH (${cats.WFH.length}): ${cats.WFH.join(', ')}</span>`);
-  if (cats['Half-day WFH'].length)   parts.push(`<span style="color:var(--teal2)">Half-day WFH (${cats['Half-day WFH'].length}): ${cats['Half-day WFH'].join(', ')}</span>`);
-  if (cats.Onsite.length)            parts.push(`<span style="color:var(--lavender)">Onsite (${cats.Onsite.length}): ${cats.Onsite.join(', ')}</span>`);
-  const presentCount = cats.Present.length;
+  if (cats['Not Punched In'] && cats['Not Punched In'].length)
+    parts.push(`<span style="color:#C0392B;font-weight:500">⚠ Not Punched In (${cats['Not Punched In'].length}): ${cats['Not Punched In'].join(', ')}</span>`);
+  if (cats.Leave && cats.Leave.length)
+    parts.push(`<span style="color:var(--rose)">Leave (${cats.Leave.length}): ${cats.Leave.join(', ')}</span>`);
+  if (cats['Half-day Leave'] && cats['Half-day Leave'].length)
+    parts.push(`<span style="color:var(--amber)">Half-day Leave (${cats['Half-day Leave'].length}): ${cats['Half-day Leave'].join(', ')}</span>`);
+  if (cats.WFH && cats.WFH.length)
+    parts.push(`<span style="color:var(--teal)">WFH (${cats.WFH.length}): ${cats.WFH.join(', ')}</span>`);
+  if (cats['Half-day WFH'] && cats['Half-day WFH'].length)
+    parts.push(`<span style="color:var(--teal2)">Half-day WFH (${cats['Half-day WFH'].length}): ${cats['Half-day WFH'].join(', ')}</span>`);
+  if (cats.Onsite && cats.Onsite.length)
+    parts.push(`<span style="color:var(--lavender)">Onsite (${cats.Onsite.length}): ${cats.Onsite.join(', ')}</span>`);
+  const punchedIn  = (cats['Punched In']  || []).length;
+  const notPunched = (cats['Not Punched In'] || []).length;
+  const onLeave    = (cats.Leave||[]).length + (cats['Half-day Leave']||[]).length;
+  const onWfh      = (cats.WFH||[]).length   + (cats['Half-day WFH']||[]).length;
+  const onSite     = (cats.Onsite||[]).length;
   return `
     <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:${parts.length?'12px':'0'}">
-      <div style="font-size:13px"><span style="font-weight:600;color:var(--green);font-size:18px">${presentCount}</span> <span style="color:var(--text2)">Present</span></div>
-      <div style="font-size:13px"><span style="font-weight:600;color:var(--rose);font-size:18px">${cats.Leave.length + cats['Half-day Leave'].length}</span> <span style="color:var(--text2)">On Leave</span></div>
-      <div style="font-size:13px"><span style="font-weight:600;color:var(--teal);font-size:18px">${cats.WFH.length + cats['Half-day WFH'].length}</span> <span style="color:var(--text2)">WFH</span></div>
-      <div style="font-size:13px"><span style="font-weight:600;color:var(--lavender);font-size:18px">${cats.Onsite.length}</span> <span style="color:var(--text2)">Onsite</span></div>
+      <div style="font-size:13px"><span style="font-weight:600;color:var(--green);font-size:18px">${punchedIn}</span> <span style="color:var(--text2)">Punched In</span></div>
+      ${notPunched ? `<div style="font-size:13px"><span style="font-weight:600;color:#C0392B;font-size:18px">${notPunched}</span> <span style="color:var(--text2)">Not Punched In</span></div>` : ''}
+      <div style="font-size:13px"><span style="font-weight:600;color:var(--rose);font-size:18px">${onLeave}</span> <span style="color:var(--text2)">On Leave</span></div>
+      <div style="font-size:13px"><span style="font-weight:600;color:var(--teal);font-size:18px">${onWfh}</span> <span style="color:var(--text2)">WFH</span></div>
+      <div style="font-size:13px"><span style="font-weight:600;color:var(--lavender);font-size:18px">${onSite}</span> <span style="color:var(--text2)">Onsite</span></div>
     </div>
     ${parts.length ? '<div style="font-size:12px;color:var(--text2);line-height:1.8">' + parts.join('<br>') + '</div>' : ''}
   `;
@@ -1126,7 +1173,7 @@ async function buildAttendanceDashboard() {
   todayCard.innerHTML = '<div style="color:var(--text3);font-size:13px">Loading...</div>';
   monthList.innerHTML = '';
 
-  const employees = await ensureAllData();
+  const [employees, punchMap] = await Promise.all([ensureAllData(), ensurePunchData()]);
   if (!employees || !employees.length) {
     todayCard.innerHTML = '<div style="color:var(--text3)">No data available.</div>';
     return;
@@ -1151,7 +1198,8 @@ async function buildAttendanceDashboard() {
   } else if (HOLIDAYS_MAP[todayKey]) {
     todayCard.innerHTML = `<div style="font-size:13px;color:var(--amber)">${todayDateStr} — ${HOLIDAYS_MAP[todayKey]}</div>`;
   } else {
-    const todayCats = getDayStats(employees, todayMonth, todayDay);
+    const todayDateKey = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(todayDay).padStart(2,'0')}`;
+    const todayCats = getDayStats(employees, todayMonth, todayDay, punchMap, todayDateKey);
     todayCard.innerHTML = `<div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:12px">${todayDateStr}</div>` + formatDaySummary(todayCats, false);
   }
 
@@ -1187,7 +1235,6 @@ async function buildAttendanceDashboard() {
     const calMonth = fyCalMonth(month);
     const daysInMonth = new Date(yr, calMonth, 0).getDate();
 
-    // Month accordion
     const wrap = document.createElement('div');
     wrap.style.cssText = 'border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden';
 
@@ -1204,7 +1251,7 @@ async function buildAttendanceDashboard() {
       hdr.querySelector('span:last-child').textContent = open ? '▼' : '▲';
       if (!open && !body.dataset.built) {
         body.dataset.built = '1';
-        buildMonthHistory(body, employees, month, yr, calMonth, daysInMonth);
+        buildMonthHistory(body, employees, month, yr, calMonth, daysInMonth, punchMap);
       }
     };
 
@@ -1214,7 +1261,7 @@ async function buildAttendanceDashboard() {
   });
 }
 
-function buildMonthHistory(container, employees, month, yr, calMonth, daysInMonth) {
+function buildMonthHistory(container, employees, month, yr, calMonth, daysInMonth, punchMap) {
   let html = '';
   for (let day = daysInMonth; day >= 1; day--) {
     const d = new Date(yr, calMonth - 1, day);  // calMonth is 1-based
@@ -1229,7 +1276,8 @@ function buildMonthHistory(container, employees, month, yr, calMonth, daysInMont
       continue;
     }
 
-    const cats = getDayStats(employees, month, day);
+    const dKey = `${yr}-${String(calMonth).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const cats = getDayStats(employees, month, day, punchMap, dKey);
     const hasActivity = cats.Leave.length || cats['Half-day Leave'].length ||
                         cats.WFH.length || cats['Half-day WFH'].length || cats.Onsite.length;
 
