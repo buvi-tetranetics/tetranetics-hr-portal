@@ -347,6 +347,7 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
     <div class="nav-pills">
       <button class="nav-pill active" id="nav-leave" onclick="switchView('leave')">My leave</button>
       <button class="nav-pill" id="nav-holidays" onclick="switchView('holidays')">Holidays</button>
+      <button class="nav-pill" id="nav-attendance" onclick="switchView('attendance')" style="display:none">Attendance</button>
     </div>
   </header>
 
@@ -467,6 +468,26 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
     <button class="logout-btn" onclick="logout()">← Sign out</button>
   </div>
 
+  <!-- ── Attendance Dashboard view (admin only) ── -->
+  <div id="attendance-view" style="display:none">
+    <div class="dash-card" style="max-width:900px;margin:0 auto">
+      <div class="section-header" style="margin-bottom:20px">
+        <span class="section-title" style="font-size:16px;font-weight:600">Attendance Dashboard</span>
+        <span id="att-updated" style="font-size:12px;color:var(--text3)"></span>
+      </div>
+      <!-- Today card -->
+      <div id="att-today-card" style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:24px">
+        <div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:14px;text-transform:uppercase;letter-spacing:.06em">Today</div>
+        <div id="att-today-content"></div>
+      </div>
+      <!-- Month-wise history -->
+      <div class="section-header" style="margin-bottom:12px">
+        <span class="section-title">Month-wise history</span>
+      </div>
+      <div id="att-month-list"></div>
+    </div>
+  </div>
+
   <!-- ── Holiday Calendar view (common to all employees, no login needed) ── -->
   <div id="holiday-view" style="display:none">
     <div class="dash-header">
@@ -494,6 +515,9 @@ const REDIRECT_URI = window.location.href.split("?")[0].split("#")[0]; // auto-d
 
 // SSO enabled when CLIENT_ID is configured; falls back to email-only when not
 const SSO_ENABLED = CLIENT_ID !== "PASTE_YOUR_APPLICATION_CLIENT_ID_HERE";
+
+// Attendance Dashboard — admin-only access
+const ADMIN_EMAILS = ["buvi.g@tetranetics.com", "siddhant@tetranetics.com"];
 
 // Demo holiday data — shown when HOLIDAYS_CSV_URL is not configured
 const DEMO_HOLIDAYS = [
@@ -746,6 +770,10 @@ function showDashboard(row, isDemo, displayName) {
   document.getElementById('dash-email').textContent = row.EmployeeEmail||'';
   document.getElementById('dash-updated').textContent = row.LastUpdated ? `Last updated: ${row.LastUpdated}` : '';
 
+  // Show Attendance tab for admins
+  const isAdmin = ADMIN_EMAILS.map(e=>e.toLowerCase()).includes((row.EmployeeEmail||'').toLowerCase());
+  document.getElementById('nav-attendance').style.display = isAdmin ? 'inline-flex' : 'none';
+
   // KPIs
   const balance   = parseFloat(row.RemainingBalance||0);
   const taken     = parseFloat(row.TotalLeavesTakenFY||0);
@@ -768,7 +796,7 @@ function showDashboard(row, isDemo, displayName) {
   setTimeout(() => {
     const bar = document.getElementById('bar-fill');
     bar.style.width = remainPct + '%';
-    bar.className = 'bar-fill' + (balance <= 2 ? ' danger' : balance <= 7 ? ' warn' : '');
+    bar.className = 'bar-fill' + (balance <= 2 ? ' danger' : balance <= 4 ? ' warn' : '');
     document.getElementById('bar-pct').textContent = remainPct + '% remaining';
   }, 100);
 
@@ -803,9 +831,9 @@ function buildMonthList(row) {
   const onsiteMap   = parseSummary(row.OnsiteDatesSummary);
 
   // Only show months that have any data
-  const activeMonths = FY_MONTHS.filter(m =>
+  const activeMonths = [...FY_MONTHS].filter(m =>
     leaveMap[m] || wkSFMap[m] || daySFMap[m] || compoffMap[m] || wfhMap[m] || onsiteMap[m]
-  );
+  ).reverse();  // most recent month first
 
   if (!activeMonths.length) {
     list.innerHTML = '<div style="color:var(--text3);font-size:14px;padding:20px 0;">No month-wise data entered yet. Check back after HR updates the records.</div>';
@@ -917,15 +945,21 @@ let wasLoggedIn = false;
 function switchView(view) {
   document.getElementById('nav-leave').classList.toggle('active', view === 'leave');
   document.getElementById('nav-holidays').classList.toggle('active', view === 'holidays');
+  document.getElementById('nav-attendance').classList.toggle('active', view === 'attendance');
+
+  document.getElementById('holiday-view').style.display    = 'none';
+  document.getElementById('attendance-view').style.display = 'none';
+  document.getElementById('login-view').style.display      = 'none';
+  document.getElementById('dash-view').style.display       = 'none';
 
   if (view === 'holidays') {
     wasLoggedIn = document.getElementById('dash-view').style.display === 'block';
-    document.getElementById('login-view').style.display = 'none';
-    document.getElementById('dash-view').style.display = 'none';
     document.getElementById('holiday-view').style.display = 'block';
     loadHolidays();
+  } else if (view === 'attendance') {
+    document.getElementById('attendance-view').style.display = 'block';
+    buildAttendanceDashboard();
   } else {
-    document.getElementById('holiday-view').style.display = 'none';
     if (wasLoggedIn && currentData) {
       document.getElementById('dash-view').style.display = 'block';
     } else {
@@ -1005,6 +1039,210 @@ function renderHolidays(holidays) {
     listEl.appendChild(card);
   });
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Attendance Dashboard (admin only)
+// Reads from the same powerapps_data.csv — uses the AllEmployees data
+// to compute daily present/leave/WFH/onsite counts
+// ─────────────────────────────────────────────────────────────────────────────
+let allEmployeeData = null;
+
+async function ensureAllData() {
+  if (allEmployeeData) return allEmployeeData;
+  const { data } = await fetchCSV();
+  allEmployeeData = data;
+  return data;
+}
+
+function parseMonthDates(summaryStr, month) {
+  // From "April: 10th,30th | May: 4th,14th-15th" extract dates for a given month
+  const days = new Set();
+  if (!summaryStr) return days;
+  summaryStr.split('|').forEach(part => {
+    part = part.trim();
+    const m = part.match(/^(\w+):\s*(.+)/);
+    if (m && m[1].trim() === month) {
+      m[2].split(',').forEach(d => {
+        d = d.trim();
+        const range = d.match(/(\d+)(?:st|nd|rd|th)?\s*-\s*(\d+)/);
+        if (range) {
+          for (let i = parseInt(range[1]); i <= parseInt(range[2]); i++) days.add(i);
+        } else {
+          const single = d.match(/(\d+)/);
+          if (single) days.add(parseInt(single[1]));
+        }
+      });
+    }
+  });
+  return days;
+}
+
+function getEmployeeStatusOnDay(row, month, day) {
+  const leaveDays  = parseMonthDates(row.LeaveDatesSummary, month);
+  const wfhDays    = parseMonthDates(row.WFHDatesSummary, month);
+  const onsiteDays = parseMonthDates(row.OnsiteDatesSummary, month);
+  const hdLeaveDays= parseMonthDates(row.HalfDayLeaveDatesSummary, month);
+  const hdWfhDays  = parseMonthDates(row.HalfDayWFHDatesSummary, month);
+  if (leaveDays.has(day))   return 'Leave';
+  if (hdLeaveDays.has(day)) return 'Half-day Leave';
+  if (onsiteDays.has(day))  return 'Onsite';
+  if (wfhDays.has(day))     return 'WFH';
+  if (hdWfhDays.has(day))   return 'Half-day WFH';
+  return 'Present';
+}
+
+function getDayStats(employees, month, day) {
+  const cats = { Leave:[], 'Half-day Leave':[], WFH:[], 'Half-day WFH':[], Onsite:[], Present:[] };
+  employees.forEach(row => {
+    const status = getEmployeeStatusOnDay(row, month, day);
+    cats[status].push(row.EmployeeName || row.EmployeeEmail);
+  });
+  return cats;
+}
+
+function formatDaySummary(cats, compact) {
+  const total = Object.values(cats).flat().length;
+  const parts = [];
+  if (cats.Leave.length)             parts.push(`<span style="color:var(--rose)">Leave (${cats.Leave.length}): ${cats.Leave.join(', ')}</span>`);
+  if (cats['Half-day Leave'].length) parts.push(`<span style="color:var(--amber)">Half-day Leave (${cats['Half-day Leave'].length}): ${cats['Half-day Leave'].join(', ')}</span>`);
+  if (cats.WFH.length)               parts.push(`<span style="color:var(--teal)">WFH (${cats.WFH.length}): ${cats.WFH.join(', ')}</span>`);
+  if (cats['Half-day WFH'].length)   parts.push(`<span style="color:var(--teal2)">Half-day WFH (${cats['Half-day WFH'].length}): ${cats['Half-day WFH'].join(', ')}</span>`);
+  if (cats.Onsite.length)            parts.push(`<span style="color:var(--lavender)">Onsite (${cats.Onsite.length}): ${cats.Onsite.join(', ')}</span>`);
+  const presentCount = cats.Present.length;
+  return `
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:${parts.length?'12px':'0'}">
+      <div style="font-size:13px"><span style="font-weight:600;color:var(--green);font-size:18px">${presentCount}</span> <span style="color:var(--text2)">Present</span></div>
+      <div style="font-size:13px"><span style="font-weight:600;color:var(--rose);font-size:18px">${cats.Leave.length + cats['Half-day Leave'].length}</span> <span style="color:var(--text2)">On Leave</span></div>
+      <div style="font-size:13px"><span style="font-weight:600;color:var(--teal);font-size:18px">${cats.WFH.length + cats['Half-day WFH'].length}</span> <span style="color:var(--text2)">WFH</span></div>
+      <div style="font-size:13px"><span style="font-weight:600;color:var(--lavender);font-size:18px">${cats.Onsite.length}</span> <span style="color:var(--text2)">Onsite</span></div>
+    </div>
+    ${parts.length ? '<div style="font-size:12px;color:var(--text2);line-height:1.8">' + parts.join('<br>') + '</div>' : ''}
+  `;
+}
+
+const HOLIDAYS_MAP = {
+  "2026-01-01":"New Year","2026-01-26":"Republic Day","2026-03-04":"Holi (Dhulivandan)",
+  "2026-03-19":"Gudi Padwa","2026-05-01":"Labour Day","2026-08-15":"Independence Day",
+  "2026-09-14":"Ganesh Chaturthi","2026-10-02":"Gandhi Jayanti","2026-10-20":"Dussehra",
+  "2026-11-07":"Dipawali / Narak Chaturthi","2026-11-08":"Diwali / Laxmi Pujan",
+  "2026-11-10":"Balipratipada Padwa","2026-11-11":"Bhaubij","2026-12-25":"Christmas"
+};
+
+async function buildAttendanceDashboard() {
+  const todayCard   = document.getElementById('att-today-content');
+  const monthList   = document.getElementById('att-month-list');
+  const updEl       = document.getElementById('att-updated');
+  todayCard.innerHTML = '<div style="color:var(--text3);font-size:13px">Loading...</div>';
+  monthList.innerHTML = '';
+
+  const employees = await ensureAllData();
+  if (!employees || !employees.length) {
+    todayCard.innerHTML = '<div style="color:var(--text3)">No data available.</div>';
+    return;
+  }
+
+  updEl.textContent = employees[0]?.LastUpdated ? `Data as of: ${employees[0].LastUpdated}` : '';
+
+  const today    = new Date();
+  const todayDay = today.getDate();
+  const todayMonth = FY_MONTHS[((today.getMonth() + 12 - 3) % 12)]; // FY month name
+  const todayDow = today.getDay();
+
+  // Today section
+  const todayDateStr = today.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const todayKey = today.toISOString().slice(0,10);
+  if (todayDow === 0 || todayDow === 6) {
+    todayCard.innerHTML = `<div style="font-size:13px;color:var(--text3)">${todayDateStr} — Weekend</div>`;
+  } else if (HOLIDAYS_MAP[todayKey]) {
+    todayCard.innerHTML = `<div style="font-size:13px;color:var(--amber)">${todayDateStr} — ${HOLIDAYS_MAP[todayKey]}</div>`;
+  } else {
+    const todayCats = getDayStats(employees, todayMonth, todayDay);
+    todayCard.innerHTML = `<div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:12px">${todayDateStr}</div>` + formatDaySummary(todayCats, false);
+  }
+
+  // Month-wise history — most recent first
+  const processedMonths = [...FY_MONTHS].reverse().filter(m => {
+    // Only show months that have some leave data
+    return employees.some(row =>
+      parseMonthDates(row.LeaveDatesSummary, m).size > 0 ||
+      parseMonthDates(row.WFHDatesSummary, m).size > 0 ||
+      parseMonthDates(row.OnsiteDatesSummary, m).size > 0
+    );
+  });
+
+  if (!processedMonths.length) {
+    monthList.innerHTML = '<div style="color:var(--text3);font-size:13px">No historical data yet.</div>';
+    return;
+  }
+
+  // FY year mapping
+  const fyYear = (m) => {
+    const idx = FY_MONTHS.indexOf(m);
+    const fyBase = today.getFullYear() - (today.getMonth() < 3 ? 1 : 0);
+    return idx <= 8 ? fyBase : fyBase + 1;
+  };
+
+  processedMonths.forEach(month => {
+    const yr = fyYear(month);
+    const calMonth = FY_MONTHS.indexOf(month) <= 8
+      ? FY_MONTHS.indexOf(month) + 4
+      : FY_MONTHS.indexOf(month) - 8;
+    const daysInMonth = new Date(yr, calMonth, 0).getDate();
+
+    // Month accordion
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden';
+
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:14px 18px;cursor:pointer;background:var(--card);user-select:none';
+    hdr.innerHTML = `<span style="font-weight:500;font-size:14px">${month} ${yr}</span><span style="font-size:12px;color:var(--text3)">▼</span>`;
+
+    const body = document.createElement('div');
+    body.style.cssText = 'display:none;padding:0 18px 14px';
+
+    hdr.onclick = () => {
+      const open = body.style.display !== 'none';
+      body.style.display = open ? 'none' : 'block';
+      hdr.querySelector('span:last-child').textContent = open ? '▼' : '▲';
+      if (!open && !body.dataset.built) {
+        body.dataset.built = '1';
+        buildMonthHistory(body, employees, month, yr, calMonth, daysInMonth);
+      }
+    };
+
+    wrap.appendChild(hdr);
+    wrap.appendChild(body);
+    monthList.appendChild(wrap);
+  });
+}
+
+function buildMonthHistory(container, employees, month, yr, calMonth, daysInMonth) {
+  let html = '';
+  for (let day = daysInMonth; day >= 1; day--) {
+    const d = new Date(yr, calMonth - 1, day);
+    const dow = d.getDay();
+    const dateKey = `${yr}-${String(calMonth).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const dateStr = d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+
+    if (dow === 0 || dow === 6) continue; // skip weekends
+
+    if (HOLIDAYS_MAP[dateKey]) {
+      html += `<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--amber)">${dateStr} — ${HOLIDAYS_MAP[dateKey]}</div>`;
+      continue;
+    }
+
+    const cats = getDayStats(employees, month, day);
+    const hasActivity = cats.Leave.length || cats['Half-day Leave'].length ||
+                        cats.WFH.length || cats['Half-day WFH'].length || cats.Onsite.length;
+
+    html += `<div style="padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:12px;font-weight:500;color:var(--text2);margin-bottom:6px">${dateStr}</div>
+      ${formatDaySummary(cats, true)}
+    </div>`;
+  }
+  container.innerHTML = html || '<div style="font-size:12px;color:var(--text3);padding:10px 0">No data for this month.</div>';
+}
+
 </script>
 </body>
 </html>
