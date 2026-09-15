@@ -1193,12 +1193,17 @@ async function buildAttendanceDashboard() {
   // Today section
   const todayDateStr = today.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const todayKey = today.toISOString().slice(0,10);
+  const todayDateKey = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(todayDay).padStart(2,'0')}`;
+  const hasTodayData = punchMap && punchMap[todayDateKey] && Object.keys(punchMap[todayDateKey]).length > 0;
+
   if (todayDow === 0 || todayDow === 6) {
     todayCard.innerHTML = `<div style="font-size:13px;color:var(--text3)">${todayDateStr} — Weekend</div>`;
   } else if (HOLIDAYS_MAP[todayKey]) {
     todayCard.innerHTML = `<div style="font-size:13px;color:var(--amber)">${todayDateStr} — ${HOLIDAYS_MAP[todayKey]}</div>`;
+  } else if (!hasTodayData) {
+    todayCard.innerHTML = `<div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:8px">${todayDateStr}</div>
+      <div style="font-size:13px;color:var(--text3)">⏳ Today's punch data not yet available — run the attendance script with today's XLS to update.</div>`;
   } else {
-    const todayDateKey = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(todayDay).padStart(2,'0')}`;
     const todayCats = getDayStats(employees, todayMonth, todayDay, punchMap, todayDateKey);
     todayCard.innerHTML = `<div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:12px">${todayDateStr}</div>` + formatDaySummary(todayCats, false);
   }
@@ -1277,6 +1282,14 @@ function buildMonthHistory(container, employees, month, yr, calMonth, daysInMont
     }
 
     const dKey = `${yr}-${String(calMonth).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    // Skip days with no data at all (not yet processed)
+    const dayHasData = punchMap && punchMap[dKey] && Object.keys(punchMap[dKey]).length > 0;
+    const hasLeaveData = employees.some(row =>
+      parseMonthDates(row.LeaveDatesSummary, month).has(day) ||
+      parseMonthDates(row.WFHDatesSummary, month).has(day) ||
+      parseMonthDates(row.OnsiteDatesSummary, month).has(day)
+    );
+    if (!dayHasData && !hasLeaveData) continue;  // unprocessed date, skip
     const cats = getDayStats(employees, month, day, punchMap, dKey);
     const hasActivity = cats.Leave.length || cats['Half-day Leave'].length ||
                         cats.WFH.length || cats['Half-day WFH'].length || cats.Onsite.length;
