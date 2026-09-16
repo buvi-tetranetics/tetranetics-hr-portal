@@ -833,11 +833,20 @@ function buildMonthList(row) {
       if (m) sfDedMap[m[1].trim()] = m[2].trim();
     });
   }
+  // Probation pay-cut: "July: 1.0d"
+  const probPayCutMap = {};
+  if (row.ProbationPayCutSummary && row.ProbationPayCutSummary !== 'None' && row.ProbationPayCutSummary !== '') {
+    row.ProbationPayCutSummary.split('|').forEach(part => {
+      part = part.trim();
+      const m = part.match(/^(\w+):\s*(.+)/);
+      if (m) probPayCutMap[m[1].trim()] = m[2].trim();
+    });
+  }
 
   // Only show months that have any data
   const activeMonths = [...FY_MONTHS].filter(m =>
     leaveMap[m] || wkSFMap[m] || daySFMap[m] || compoffMap[m] || wfhMap[m] ||
-    onsiteMap[m] || hdLeaveMap[m] || hdWfhMap[m] || sfDedMap[m]
+    onsiteMap[m] || hdLeaveMap[m] || hdWfhMap[m] || sfDedMap[m] || probPayCutMap[m]
   ).reverse();  // most recent month first
 
   if (!activeMonths.length) {
@@ -854,7 +863,8 @@ function buildMonthList(row) {
     const onsite  = onsiteMap[month];
     const hdLeave = hdLeaveMap[month];
     const hdWfh   = hdWfhMap[month];
-    const sfDed   = sfDedMap[month];
+    const sfDed      = sfDedMap[month];
+    const probPayCut = probPayCutMap[month];
 
     const card = document.createElement('div');
     card.className = 'month-card';
@@ -867,8 +877,9 @@ function buildMonthList(row) {
     if (hdWfh)   pills.push(`<span class="pill wfh" style="opacity:.8">½ WFH: ${hdWfh}</span>`);
     if (compoff) pills.push(`<span class="pill compoff">⊕ Compoff: ${compoff}</span>`);
     if (onsite)  pills.push(`<span class="pill onsite">📍 Onsite: ${onsite}</span>`);
-    if (sfDed)   pills.push(`<span class="pill shortfall">⚠ Deducted: ${sfDed}</span>`);
+    if (sfDed)       pills.push(`<span class="pill shortfall">⚠ Deducted: ${sfDed}</span>`);
     else if (wkSF || daySF) pills.push(`<span class="pill shortfall">⚠ Shortfalls</span>`);
+    if (probPayCut)  pills.push(`<span class="pill shortfall" style="background:#C0392B;color:#fff">⚠ Pay-cut: ${probPayCut}</span>`);
 
     card.innerHTML = `
       <div class="month-head" onclick="toggleMonth(this.parentElement)">
@@ -888,6 +899,7 @@ function buildMonthList(row) {
             ${detailCell('Compoff dates', compoff)}
             ${detailCell('Onsite / client dates', onsite)}
             ${sfDed ? detailCell('Shortfall deduction', `<strong style="color:#C0392B">${sfDed}</strong>`) : ''}
+            ${probPayCut ? detailCell('Probation pay-cut', `<strong style="color:#C0392B">⚠ ${probPayCut} excess leave during probation — salary deduction</strong>`) : ''}
             ${detailCell('Weekly shortfalls', wkSF)}
             ${detailCell('Daily shortfalls', daySF)}
           </div>
