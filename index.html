@@ -1121,30 +1121,31 @@ function parseMonthDates(summaryStr, month) {
 }
 
 function getEmployeeStatusOnDay(row, month, day, punchMap, dateStr) {
-  // 1. Check leave summary strings first — these are HR-entered and authoritative
-  //    for leave/half-day/wfh/onsite regardless of punch status
-  const leaveDays   = parseMonthDates(row.LeaveDatesSummary, month);
-  const wfhDays     = parseMonthDates(row.WFHDatesSummary, month);
-  const onsiteDays  = parseMonthDates(row.OnsiteDatesSummary, month);
-  const hdLeaveDays = parseMonthDates(row.HalfDayLeaveDatesSummary, month);
-  const hdWfhDays   = parseMonthDates(row.HalfDayWFHDatesSummary, month);
-  if (leaveDays.has(day))   return 'Leave';
-  if (hdLeaveDays.has(day)) return 'Half-day Leave';
-  if (wfhDays.has(day))     return 'WFH';
-  if (hdWfhDays.has(day))   return 'Half-day WFH';
-  if (onsiteDays.has(day))  return 'Onsite';
+  // 1. Check leave summary strings first — HR-entered, authoritative
+  const leaveDays    = parseMonthDates(row.LeaveDatesSummary, month);
+  const wfhDays      = parseMonthDates(row.WFHDatesSummary, month);
+  const onsiteDays   = parseMonthDates(row.OnsiteDatesSummary, month);
+  const hdLeaveDays  = parseMonthDates(row.HalfDayLeaveDatesSummary, month);
+  const hdWfhDays    = parseMonthDates(row.HalfDayWFHDatesSummary, month);
+  const hdCompoffDays= parseMonthDates(row.HalfDayCompoffDatesSummary, month);
+  if (leaveDays.has(day))    return 'Leave';
+  if (hdLeaveDays.has(day))  return 'Half-day Leave';
+  if (wfhDays.has(day))      return 'WFH';
+  if (hdWfhDays.has(day))    return 'Half-day WFH';
+  if (onsiteDays.has(day))   return 'Onsite';
+  if (hdCompoffDays.has(day))return 'Half-day Comp-Off';
 
   // 2. Check daily_punch.csv for punch status
   const hasPunchData = punchMap && dateStr && punchMap[dateStr];
-  if (!hasPunchData) return 'Data N/A';  // date not in processed range
+  if (!hasPunchData) return 'Data N/A';         // date not in processed range
   const empStatus = punchMap[dateStr][row.EmployeeName];
-  if (!empStatus) return 'Data N/A';     // employee not in this month's data
-  return empStatus;  // "Punched In" | "Not Punched In" | "Holiday"
+  if (!empStatus)   return 'Data N/A';          // employee not in this month's data
+  return empStatus;   // "Punched In" | "Not Punched In" | "Holiday"
 }
 
 function getDayStats(employees, month, day, punchMap, dateStr) {
   const cats = { 'Punched In':[], 'Not Punched In':[], Leave:[], 'Half-day Leave':[],
-                 WFH:[], 'Half-day WFH':[], Onsite:[], 'Data N/A':[] };
+                 WFH:[], 'Half-day WFH':[], Onsite:[], 'Half-day Comp-Off':[], 'Data N/A':[] };
   employees.forEach(row => {
     const status = getEmployeeStatusOnDay(row, month, day, punchMap, dateStr);
     if (cats[status] !== undefined) cats[status].push(row.EmployeeName || row.EmployeeEmail);
@@ -1154,13 +1155,14 @@ function getDayStats(employees, month, day, punchMap, dateStr) {
 }
 
 function formatDaySummary(cats, compact) {
-  const punchedIn  = (cats['Punched In']     || []).length;
-  const notPunched = (cats['Not Punched In'] || []).length;
-  const onLeave    = (cats.Leave||[]).length + (cats['Half-day Leave']||[]).length;
-  const onWfh      = (cats.WFH||[]).length   + (cats['Half-day WFH']||[]).length;
-  const onSite     = (cats.Onsite||[]).length;
-  const noData     = (cats['Data N/A']       || []).length;
-  const hasPunch   = punchedIn + notPunched > 0;
+  const punchedIn   = (cats['Punched In']       || []).length;
+  const notPunched  = (cats['Not Punched In']   || []).length;
+  const onLeave     = (cats.Leave||[]).length + (cats['Half-day Leave']||[]).length;
+  const onWfh       = (cats.WFH||[]).length   + (cats['Half-day WFH']||[]).length;
+  const onSite      = (cats.Onsite||[]).length;
+  const hdCompoff   = (cats['Half-day Comp-Off']|| []).length;
+  const noData      = (cats['Data N/A']         || []).length;
+  const hasPunch    = punchedIn + notPunched > 0;
 
   const parts = [];
   if (notPunched)
@@ -1175,6 +1177,8 @@ function formatDaySummary(cats, compact) {
     parts.push(`<span style="color:var(--teal2)">Half-day WFH (${cats['Half-day WFH'].length}): ${cats['Half-day WFH'].join(', ')}</span>`);
   if (cats.Onsite && cats.Onsite.length)
     parts.push(`<span style="color:var(--lavender)">Onsite (${cats.Onsite.length}): ${cats.Onsite.join(', ')}</span>`);
+  if (cats['Half-day Comp-Off'] && cats['Half-day Comp-Off'].length)
+    parts.push(`<span style="color:var(--green)">Half-day Comp-Off (${hdCompoff}): ${cats['Half-day Comp-Off'].join(', ')}</span>`);
 
   const countsHtml = `
     <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:${parts.length?'10px':'0'}">
@@ -1183,7 +1187,8 @@ function formatDaySummary(cats, compact) {
       ${onLeave ? `<div style="font-size:13px"><span style="font-weight:600;color:var(--rose);font-size:18px">${onLeave}</span> <span style="color:var(--text2)">On Leave</span></div>` : ''}
       ${onWfh ? `<div style="font-size:13px"><span style="font-weight:600;color:var(--teal);font-size:18px">${onWfh}</span> <span style="color:var(--text2)">WFH</span></div>` : ''}
       ${onSite ? `<div style="font-size:13px"><span style="font-weight:600;color:var(--lavender);font-size:18px">${onSite}</span> <span style="color:var(--text2)">Onsite</span></div>` : ''}
-      ${!hasPunch && noData > 0 ? `<div style="font-size:12px;color:var(--text3);font-style:italic">Punch data not available</div>` : ''}
+      ${hdCompoff ? `<div style="font-size:13px"><span style="font-weight:600;color:var(--green);font-size:18px">${hdCompoff}</span> <span style="color:var(--text2)">HD Comp-Off</span></div>` : ''}
+      ${!hasPunch && noData > 0 && !onLeave && !onWfh && !onSite ? `<div style="font-size:12px;color:var(--text3);font-style:italic">Punch data not available</div>` : ''}
     </div>`;
 
   return countsHtml + (parts.length
@@ -1233,12 +1238,13 @@ async function buildAttendanceDashboard() {
     todayCard.innerHTML = `<div style="font-size:13px;color:var(--text3)">${todayDateStr} — Weekend</div>`;
   } else if (HOLIDAYS_MAP[todayKey]) {
     todayCard.innerHTML = `<div style="font-size:13px;color:var(--amber)">${todayDateStr} — ${HOLIDAYS_MAP[todayKey]}</div>`;
-  } else if (!hasTodayData) {
-    todayCard.innerHTML = `<div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:8px">${todayDateStr}</div>
-      <div style="font-size:13px;color:var(--text3)">⏳ Today's punch data not yet available — run the attendance script with today's XLS to update.</div>`;
   } else {
+    // Always build stats — punch data may or may not be available
     const todayCats = getDayStats(employees, todayMonth, todayDay, punchMap, todayDateKey);
-    todayCard.innerHTML = `<div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:12px">${todayDateStr}</div>` + formatDaySummary(todayCats, false);
+    const punchNote = !hasTodayData
+      ? `<div style="font-size:12px;color:var(--text3);margin-bottom:10px;font-style:italic">⏳ Punch data not yet available for today — counts below are from leave/WFH entries only.</div>`
+      : '';
+    todayCard.innerHTML = `<div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:8px">${todayDateStr}</div>${punchNote}` + formatDaySummary(todayCats, false);
   }
 
   // Month-wise history — most recent first
