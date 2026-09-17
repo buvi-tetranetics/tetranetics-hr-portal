@@ -1440,7 +1440,13 @@ async function buildLeaveBalance() {
     tbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--text3)">No data available.</td></tr>';
     return;
   }
-  _lbData = employees.filter(r => r.EmployeeName && r.EmployeeName !== 'None');
+  _lbData = employees.filter(r =>
+    r.EmployeeName &&
+    r.EmployeeName !== 'None' &&
+    r.EmployeeEmail &&
+    r.EmployeeEmail.includes('@') &&
+    r.EmployeeEmail.includes('tetranetics.com')
+  );
   _lbFiltered = [..._lbData];
   updEl.textContent = _lbData[0]?.LastUpdated ? `Data as of: ${_lbData[0].LastUpdated}` : '';
   renderLeaveBalance();
