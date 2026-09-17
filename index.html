@@ -1218,7 +1218,7 @@ function getEmployeeStatusOnDay(row, month, day, punchMap, dateStr) {
 
 function getDayStats(employees, month, day, punchMap, dateStr) {
   const cats = { 'Punched In':[], 'Not Punched In':[], Leave:[], 'Half-day Leave':[],
-                 WFH:[], 'Half-day WFH':[], Onsite:[], 'Half-day Comp-Off':[], 'Data N/A':[] };
+                 WFH:[], 'Half-day WFH':[], Onsite:[], 'Half-day Comp-Off':[], 'HR Pay-cut':[], 'Data N/A':[] };
   employees.forEach(row => {
     const status = getEmployeeStatusOnDay(row, month, day, punchMap, dateStr);
     if (cats[status] !== undefined) cats[status].push(row.EmployeeName || row.EmployeeEmail);
@@ -1252,6 +1252,8 @@ function formatDaySummary(cats, compact) {
     parts.push(`<span style="color:var(--lavender)">Onsite (${cats.Onsite.length}): ${cats.Onsite.join(', ')}</span>`);
   if (cats['Half-day Comp-Off'] && cats['Half-day Comp-Off'].length)
     parts.push(`<span style="color:var(--green)">Half-day Comp-Off (${hdCompoff}): ${cats['Half-day Comp-Off'].join(', ')}</span>`);
+  if (cats['HR Pay-cut'] && cats['HR Pay-cut'].length)
+    parts.push(`<span style="color:#8B0000;font-weight:500">⚠ HR Pay-cut (${cats['HR Pay-cut'].length}): ${cats['HR Pay-cut'].join(', ')}</span>`);
 
   const countsHtml = `
     <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:${parts.length?'10px':'0'}">
@@ -1261,6 +1263,7 @@ function formatDaySummary(cats, compact) {
       ${onWfh ? `<div style="font-size:13px"><span style="font-weight:600;color:var(--teal);font-size:18px">${onWfh}</span> <span style="color:var(--text2)">WFH</span></div>` : ''}
       ${onSite ? `<div style="font-size:13px"><span style="font-weight:600;color:var(--lavender);font-size:18px">${onSite}</span> <span style="color:var(--text2)">Onsite</span></div>` : ''}
       ${hdCompoff ? `<div style="font-size:13px"><span style="font-weight:600;color:var(--green);font-size:18px">${hdCompoff}</span> <span style="color:var(--text2)">HD Comp-Off</span></div>` : ''}
+      ${(cats['HR Pay-cut']||[]).length ? `<div style="font-size:13px"><span style="font-weight:600;color:#8B0000;font-size:18px">${(cats['HR Pay-cut']||[]).length}</span> <span style="color:var(--text2)">HR Pay-cut</span></div>` : ''}
       ${!hasPunch && noData > 0 && !onLeave && !onWfh && !onSite ? `<div style="font-size:12px;color:var(--text3);font-style:italic">Punch data not available</div>` : ''}
     </div>`;
 
