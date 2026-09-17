@@ -348,6 +348,7 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
       <button class="nav-pill active" id="nav-leave" onclick="switchView('leave')">My leave</button>
       <button class="nav-pill" id="nav-holidays" onclick="switchView('holidays')">Holidays</button>
       <button class="nav-pill" id="nav-attendance" onclick="switchView('attendance')" style="display:none">Attendance</button>
+      <button class="nav-pill" id="nav-leavebal" onclick="switchView('leavebal')" style="display:none">Leave Balance</button>
     </div>
   </header>
 
@@ -461,6 +462,48 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
     <div class="month-list" id="month-list"></div>
 
     <button class="logout-btn" onclick="logout()">← Sign out</button>
+  </div>
+
+  <!-- ── Leave Balance Dashboard view (admin only) ── -->
+  <div id="leavebal-view" style="display:none">
+    <div class="dash-card" style="max-width:1000px;margin:0 auto">
+      <div class="section-header" style="margin-bottom:20px">
+        <span class="section-title" style="font-size:16px;font-weight:600">Current Leave Balance — All Employees</span>
+        <span id="lb-updated" style="font-size:12px;color:var(--text3)"></span>
+      </div>
+      <div style="margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <input id="lb-search" type="text" placeholder="Search employee..." 
+          oninput="filterLeaveBalance()"
+          style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--card);color:var(--text1);width:220px">
+        <select id="lb-sort" onchange="renderLeaveBalance()"
+          style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--card);color:var(--text1)">
+          <option value="name">Sort by Name</option>
+          <option value="balance_asc">Balance (Low → High)</option>
+          <option value="balance_desc">Balance (High → Low)</option>
+          <option value="taken_desc">Most Leaves Taken</option>
+        </select>
+        <span id="lb-count" style="font-size:12px;color:var(--text3)"></span>
+      </div>
+      <div style="overflow-x:auto">
+        <table id="lb-table" style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead>
+            <tr style="background:var(--card2);border-bottom:2px solid var(--border)">
+              <th style="padding:10px 14px;text-align:left;font-weight:600;color:var(--text2)">Employee</th>
+              <th style="padding:10px 14px;text-align:center;font-weight:600;color:var(--text2)">Base</th>
+              <th style="padding:10px 14px;text-align:center;font-weight:600;color:var(--text2)">Taken (to date)</th>
+              <th style="padding:10px 14px;text-align:center;font-weight:600;color:var(--text2)">Planned Ahead</th>
+              <th style="padding:10px 14px;text-align:center;font-weight:600;color:var(--text2)">Shortfall Ded.</th>
+              <th style="padding:10px 14px;text-align:center;font-weight:600;color:var(--text2)">Comp-Offs</th>
+              <th style="padding:10px 14px;text-align:center;font-weight:600;color:var(--text2)">Pay-cut</th>
+              <th style="padding:10px 14px;text-align:center;font-weight:600;color:var(--text2)">Current Bal.</th>
+              <th style="padding:10px 14px;text-align:center;font-weight:600;color:var(--text2)">Projected Bal.</th>
+              <th style="padding:10px 14px;text-align:left;font-weight:600;color:var(--text2)">Projected Bar</th>
+            </tr>
+          </thead>
+          <tbody id="lb-tbody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <!-- ── Attendance Dashboard view (admin only) ── -->
@@ -765,6 +808,7 @@ function showDashboard(row, isDemo, displayName) {
   // Show Attendance tab for admins
   const isAdmin = ADMIN_EMAILS.map(e=>e.toLowerCase()).includes((row.EmployeeEmail||'').toLowerCase());
   document.getElementById('nav-attendance').style.display = isAdmin ? 'inline-flex' : 'none';
+  document.getElementById('nav-leavebal').style.display   = isAdmin ? 'inline-flex' : 'none';
 
   // KPIs
   const balance   = parseFloat(row.RemainingBalance||0);
@@ -842,11 +886,20 @@ function buildMonthList(row) {
       if (m) probPayCutMap[m[1].trim()] = m[2].trim();
     });
   }
+  // HR manual pay-cut dates: "April: 3rd,15th | July: 8th"
+  const hrPaycutMap = {};
+  if (row.HRPaycutDatesSummary && row.HRPaycutDatesSummary !== 'None' && row.HRPaycutDatesSummary !== '') {
+    row.HRPaycutDatesSummary.split('|').forEach(part => {
+      part = part.trim();
+      const m = part.match(/^(\w+):\s*(.+)/);
+      if (m) hrPaycutMap[m[1].trim()] = m[2].trim();
+    });
+  }
 
   // Only show months that have any data
   const activeMonths = [...FY_MONTHS].filter(m =>
     leaveMap[m] || wkSFMap[m] || daySFMap[m] || compoffMap[m] || wfhMap[m] ||
-    onsiteMap[m] || hdLeaveMap[m] || hdWfhMap[m] || sfDedMap[m] || probPayCutMap[m]
+    onsiteMap[m] || hdLeaveMap[m] || hdWfhMap[m] || sfDedMap[m] || probPayCutMap[m] || hrPaycutMap[m]
   ).reverse();  // most recent month first
 
   if (!activeMonths.length) {
@@ -865,6 +918,7 @@ function buildMonthList(row) {
     const hdWfh   = hdWfhMap[month];
     const sfDed      = sfDedMap[month];
     const probPayCut = probPayCutMap[month];
+    const hrPaycut   = hrPaycutMap[month];
 
     const card = document.createElement('div');
     card.className = 'month-card';
@@ -880,6 +934,7 @@ function buildMonthList(row) {
     if (sfDed)       pills.push(`<span class="pill shortfall">⚠ Deducted: ${sfDed}</span>`);
     else if (wkSF || daySF) pills.push(`<span class="pill shortfall">⚠ Shortfalls</span>`);
     if (probPayCut)  pills.push(`<span class="pill shortfall" style="background:#C0392B;color:#fff">⚠ Pay-cut: ${probPayCut}</span>`);
+    if (hrPaycut)    pills.push(`<span class="pill shortfall" style="background:#8B0000;color:#fff">⚠ HR Pay-cut: ${hrPaycut}</span>`);
 
     card.innerHTML = `
       <div class="month-head" onclick="toggleMonth(this.parentElement)">
@@ -900,6 +955,7 @@ function buildMonthList(row) {
             ${detailCell('Onsite / client dates', onsite)}
             ${sfDed ? detailCell('Shortfall deduction', `<strong style="color:#C0392B">${sfDed}</strong>`) : ''}
             ${probPayCut ? detailCell('Probation pay-cut', `<strong style="color:#C0392B">⚠ ${probPayCut} excess leave during probation — salary deduction</strong>`) : ''}
+            ${hrPaycut ? detailCell('HR pay-cut dates', `<strong style="color:#8B0000">⚠ ${hrPaycut} — marked as pay-cut by HR (leave balance not deducted)</strong>`) : ''}
             ${detailCell('Weekly shortfalls', wkSF)}
             ${detailCell('Daily shortfalls', daySF)}
           </div>
@@ -972,9 +1028,11 @@ function switchView(view) {
   document.getElementById('nav-leave').classList.toggle('active', view === 'leave');
   document.getElementById('nav-holidays').classList.toggle('active', view === 'holidays');
   document.getElementById('nav-attendance').classList.toggle('active', view === 'attendance');
+  document.getElementById('nav-leavebal').classList.toggle('active', view === 'leavebal');
 
   document.getElementById('holiday-view').style.display    = 'none';
   document.getElementById('attendance-view').style.display = 'none';
+  document.getElementById('leavebal-view').style.display   = 'none';
   document.getElementById('login-view').style.display      = 'none';
   document.getElementById('dash-view').style.display       = 'none';
 
@@ -985,6 +1043,9 @@ function switchView(view) {
   } else if (view === 'attendance') {
     document.getElementById('attendance-view').style.display = 'block';
     buildAttendanceDashboard();
+  } else if (view === 'leavebal') {
+    document.getElementById('leavebal-view').style.display = 'block';
+    buildLeaveBalance();
   } else {
     if (wasLoggedIn && currentData) {
       document.getElementById('dash-view').style.display = 'block';
@@ -1359,6 +1420,101 @@ function buildMonthHistory(container, employees, month, yr, calMonth, daysInMont
     </div>`;
   }
   container.innerHTML = html || '<div style="font-size:12px;color:var(--text3);padding:10px 0">No data for this month.</div>';
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Leave Balance Dashboard (admin only)
+// ─────────────────────────────────────────────────────────────────────────────
+let _lbData = null;
+let _lbFiltered = null;
+
+async function buildLeaveBalance() {
+  const tbody = document.getElementById('lb-tbody');
+  const countEl = document.getElementById('lb-count');
+  const updEl = document.getElementById('lb-updated');
+  tbody.innerHTML = '<tr><td colspan="10" style="padding:20px;text-align:center;color:var(--text3)">Loading...</td></tr>';
+
+  const employees = await ensureAllData();
+  if (!employees || !employees.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--text3)">No data available.</td></tr>';
+    return;
+  }
+  _lbData = employees.filter(r => r.EmployeeName && r.EmployeeName !== 'None');
+  _lbFiltered = [..._lbData];
+  updEl.textContent = _lbData[0]?.LastUpdated ? `Data as of: ${_lbData[0].LastUpdated}` : '';
+  renderLeaveBalance();
+}
+
+function filterLeaveBalance() {
+  const q = document.getElementById('lb-search').value.toLowerCase();
+  _lbFiltered = _lbData.filter(r =>
+    (r.EmployeeName||'').toLowerCase().includes(q) ||
+    (r.Department||'').toLowerCase().includes(q)
+  );
+  renderLeaveBalance();
+}
+
+function renderLeaveBalance() {
+  if (!_lbFiltered) return;
+  const sort = document.getElementById('lb-sort').value;
+  const data = [..._lbFiltered];
+
+  if (sort === 'name')         data.sort((a,b) => a.EmployeeName.localeCompare(b.EmployeeName));
+  if (sort === 'balance_asc')  data.sort((a,b) => parseFloat(a.RemainingBalance||0) - parseFloat(b.RemainingBalance||0));
+  if (sort === 'balance_desc') data.sort((a,b) => parseFloat(b.RemainingBalance||0) - parseFloat(a.RemainingBalance||0));
+  if (sort === 'taken_desc')   data.sort((a,b) => parseFloat(b.TotalLeavesTakenFY||0) - parseFloat(a.TotalLeavesTakenFY||0));
+
+  document.getElementById('lb-count').textContent = `${data.length} employees`;
+
+  const tbody = document.getElementById('lb-tbody');
+  tbody.innerHTML = '';
+  data.forEach((r, i) => {
+    const base      = parseFloat(r.BaseLeavesAvailable||0);
+    const taken     = parseFloat(r.TotalLeavesTakenFY||0);
+    const takenDate = parseFloat(r.LeavesTakenToDate||taken||0);
+    const planned   = parseFloat(r.PlannedAheadLeaves||0);
+    const sf        = parseFloat(r.ShortfallDeductions||0);
+    const compoff   = parseFloat(r.CompOffsEarned||0);
+    const balance   = parseFloat(r.RemainingBalance||0);
+    const projected = parseFloat(r.ProjectedBalance !== undefined ? r.ProjectedBalance : balance - planned);
+    const paycut    = r.ProbationPayCutSummary || '';
+    // Extract total pay-cut days
+    let paycutDays = 0;
+    if (paycut) {
+      paycut.split('|').forEach(p => {
+        const m = p.match(/([\d.]+)d/);
+        if (m) paycutDays += parseFloat(m[1]);
+      });
+    }
+    const projColor = projected <= 0 ? '#C0392B' : projected <= 4 ? '#E67E22' : '#1A8C3D';
+    const balColor  = balance   <= 0 ? '#C0392B' : balance   <= 4 ? '#E67E22' : '#1A8C3D';
+    const projPct   = base > 0 ? Math.min(100, Math.max(0, Math.round((projected/base)*100))) : 0;
+    const alt       = i % 2 === 0 ? 'var(--card)' : 'var(--card2)';
+
+    const tr = document.createElement('tr');
+    tr.style.cssText = `background:${alt};border-bottom:1px solid var(--border)`;
+    tr.innerHTML = `
+      <td style="padding:10px 14px">
+        <div style="font-weight:500;color:var(--text1)">${r.EmployeeName}</div>
+        <div style="font-size:11px;color:var(--text3)">${r.Department||''}</div>
+      </td>
+      <td style="padding:10px 14px;text-align:center;color:var(--text2)">${base}</td>
+      <td style="padding:10px 14px;text-align:center;color:var(--text2)">${takenDate}</td>
+      <td style="padding:10px 14px;text-align:center;color:${planned>0?'#E67E22':'var(--text3)'};font-weight:${planned>0?'600':'400'}">${planned > 0 ? planned : '—'}</td>
+      <td style="padding:10px 14px;text-align:center;color:${sf>0?'#C0392B':'var(--text3)'};font-weight:${sf>0?'600':'400'}">${sf > 0 ? sf : '—'}</td>
+      <td style="padding:10px 14px;text-align:center;color:${compoff>0?'#1A8C3D':'var(--text3)'};font-weight:${compoff>0?'600':'400'}">${compoff > 0 ? '+'+compoff : '—'}</td>
+      <td style="padding:10px 14px;text-align:center;color:${paycutDays>0?'#C0392B':'var(--text3)'};font-weight:${paycutDays>0?'600':'400'}">${paycutDays > 0 ? '⚠ '+paycutDays+'d' : '—'}</td>
+      <td style="padding:10px 14px;text-align:center;font-weight:700;font-size:15px;color:${balColor}">${balance}</td>
+      <td style="padding:10px 14px;text-align:center;font-weight:700;font-size:15px;color:${projColor}">${projected}</td>
+      <td style="padding:10px 14px;min-width:120px">
+        <div style="background:var(--border);border-radius:4px;height:8px;overflow:hidden">
+          <div style="background:${projColor};width:${projPct}%;height:100%;border-radius:4px;transition:width .3s"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px">${projPct}% projected</div>
+      </td>`;
+    tbody.appendChild(tr);
+  });
 }
 
 </script>
