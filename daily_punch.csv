@@ -2871,7 +2871,7 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-09-03,,Siddhant Dhargalkar,Not Punched In
 2026-09-03,,Shishir Jain,Punched In
 2026-09-03,,Poorvi Singh,Punched In
-2026-09-03,,Rohan Gaikwad,Not Punched In
+2026-09-03,,Rohan Gaikwad,Punched In
 2026-09-03,,Seema Alam,Punched In
 2026-09-03,,Sumeet Jadhav,Punched In
 2026-09-03,,Justin Pinto,Punched In
@@ -3053,7 +3053,7 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-09-11,,Laxman Kandhukuri,Leave
 2026-09-11,,Charlotte Crasto,Punched In
 2026-09-11,,Arshdeep Dham,Not Punched In
-2026-09-11,,Sartik Sharma,Not Punched In
+2026-09-11,,Sartik Sharma,Leave
 2026-09-11,,Krishna Pratap,Punched In
 2026-09-11,,Abi Nandhan,Punched In
 2026-09-11,,Sai Srinivas Thutta,Punched In
@@ -3101,13 +3101,13 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-09-14,,Sunny Verma,Holiday
 2026-09-14,,Jayanthi Suvarna,Holiday
 2026-09-15,,Siddhant Dhargalkar,Not Punched In
-2026-09-15,,Shishir Jain,Not Punched In
+2026-09-15,,Shishir Jain,Leave
 2026-09-15,,Poorvi Singh,WFH
 2026-09-15,,Rohan Gaikwad,Onsite
 2026-09-15,,Seema Alam,Leave
 2026-09-15,,Sumeet Jadhav,Leave
 2026-09-15,,Justin Pinto,Leave
-2026-09-15,,Bharat Goswami,Not Punched In
+2026-09-15,,Bharat Goswami,Punched In
 2026-09-15,,Laxman Kandhukuri,Onsite
 2026-09-15,,Charlotte Crasto,Punched In
 2026-09-15,,Arshdeep Dham,Not Punched In
@@ -3216,4 +3216,4 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-09-18,,Srujan K,Punched In
 2026-09-18,,Sunny Verma,Punched In
 2026-09-18,,Jayanthi Suvarna,Punched In
-# exported: 2026-09-18 17:14:42
+# exported: 2026-09-20 21:42:06
