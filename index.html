@@ -486,7 +486,7 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
       </div>
       <div style="overflow-x:auto">
         <table id="lb-table" style="width:100%;border-collapse:collapse;font-size:13px">
-          <thead>
+          <thead style="position:sticky;top:0;z-index:10">
             <tr style="background:var(--card2);border-bottom:2px solid var(--border)">
               <th style="padding:10px 14px;text-align:left;font-weight:600;color:var(--text2)">Employee</th>
               <th style="padding:10px 14px;text-align:center;font-weight:600;color:var(--text2)">Base</th>
@@ -869,6 +869,7 @@ function buildMonthList(row) {
   const hdLeaveMap    = parseSummary(row.HalfDayLeaveDatesSummary);
   const hdWfhMap      = parseSummary(row.HalfDayWFHDatesSummary);
   const hdCompoffMap  = parseSummary(row.HalfDayCompoffDatesSummary);
+  const hdOnsiteMap   = parseSummary(row.HalfDayOnsiteDatesSummary);
 
   // Monthly shortfall deductions: "April: 0.5d | May: 1.0d"
   const sfDedMap = {};
@@ -901,7 +902,7 @@ function buildMonthList(row) {
   // Only show months that have any data
   const activeMonths = [...FY_MONTHS].filter(m =>
     leaveMap[m] || wkSFMap[m] || daySFMap[m] || compoffMap[m] || wfhMap[m] ||
-    onsiteMap[m] || hdLeaveMap[m] || hdWfhMap[m] || hdCompoffMap[m] ||
+    onsiteMap[m] || hdLeaveMap[m] || hdWfhMap[m] || hdCompoffMap[m] || hdOnsiteMap[m] ||
     sfDedMap[m] || probPayCutMap[m] || hrPaycutMap[m]
   ).reverse();  // most recent month first
 
@@ -923,6 +924,7 @@ function buildMonthList(row) {
     const probPayCut = probPayCutMap[month];
     const hrPaycut   = hrPaycutMap[month];
     const hdCompoff  = hdCompoffMap[month];
+    const hdOnsite   = hdOnsiteMap[month];
 
     const card = document.createElement('div');
     card.className = 'month-card';
@@ -935,6 +937,7 @@ function buildMonthList(row) {
     if (hdWfh)   pills.push(`<span class="pill wfh" style="opacity:.8">½ WFH: ${hdWfh}</span>`);
     if (compoff)   pills.push(`<span class="pill compoff">⊕ Compoff: ${compoff}</span>`);
     if (hdCompoff) pills.push(`<span class="pill compoff" style="opacity:.8">½ Compoff: ${hdCompoff}</span>`);
+    if (hdOnsite)  pills.push(`<span class="pill onsite" style="opacity:.8">½ Onsite: ${hdOnsite}</span>`);
     if (onsite)  pills.push(`<span class="pill onsite">📍 Onsite: ${onsite}</span>`);
     if (sfDed)       pills.push(`<span class="pill shortfall">⚠ Deducted: ${sfDed}</span>`);
     else if (wkSF || daySF) pills.push(`<span class="pill shortfall">⚠ Shortfalls</span>`);
@@ -959,6 +962,7 @@ function buildMonthList(row) {
             ${detailCell('Compoff dates', compoff)}
             ${hdCompoff ? detailCell('Half-day Compoff dates', hdCompoff) : ''}
             ${detailCell('Onsite / client dates', onsite)}
+            ${hdOnsite ? detailCell('Half-day onsite dates', hdOnsite) : ''}
             ${sfDed ? detailCell('Shortfall deduction', `<strong style="color:#C0392B">${sfDed}</strong>`) : ''}
             ${probPayCut ? detailCell('Probation pay-cut', `<strong style="color:#C0392B">⚠ ${probPayCut} excess leave during probation — salary deduction</strong>`) : ''}
             ${hrPaycut ? detailCell('HR pay-cut dates', `<strong style="color:#8B0000">⚠ ${hrPaycut} — marked as pay-cut by HR (leave balance not deducted)</strong>`) : ''}
