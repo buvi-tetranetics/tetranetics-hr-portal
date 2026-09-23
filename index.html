@@ -193,7 +193,7 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 .last-updated{font-size:12px;color:var(--text3);margin-top:6px;}
 
 /* KPI strip */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}@media(min-width:600px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}@media(min-width:900px){.kpi-grid{grid-template-columns:repeat(6,1fr)}}
 @media(max-width:640px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
 .kpi-card{
   background:var(--navy2);border:1px solid var(--border);
@@ -418,15 +418,25 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
     </div>
 
     <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Total Available</div>
+        <div class="kpi-value" id="kpi-base">—</div>
+        <div class="kpi-sub">incl. carry forward</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Taken (to date)</div>
+        <div class="kpi-value" id="kpi-taken-date">—</div>
+        <div class="kpi-sub">leaves used so far</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Applied Ahead</div>
+        <div class="kpi-value amber" id="kpi-planned">—</div>
+        <div class="kpi-sub">future leaves planned</div>
+      </div>
       <div class="kpi-card highlight">
         <div class="kpi-label">Remaining (excl. applied)</div>
         <div class="kpi-value teal" id="kpi-balance">—</div>
-        <div class="kpi-sub">days available</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Leaves (taken + applied)</div>
-        <div class="kpi-value" id="kpi-taken">—</div>
-        <div class="kpi-sub">this FY</div>
+        <div class="kpi-sub">current balance</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">Comp-offs</div>
