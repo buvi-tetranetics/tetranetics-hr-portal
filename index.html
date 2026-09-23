@@ -842,10 +842,12 @@ function showDashboard(row, isDemo, displayName) {
   const shortfall = parseFloat(row.ShortfallDeductions||0);
   const base      = parseFloat(row.BaseLeavesAvailable||24);
 
-  document.getElementById('kpi-balance').textContent   = balance;
-  document.getElementById('kpi-taken').textContent     = taken;
-  document.getElementById('kpi-compoff').textContent   = compoff;
-  document.getElementById('kpi-shortfall').textContent = shortfall;
+  document.getElementById('kpi-base').textContent       = base || '—';
+  document.getElementById('kpi-taken-date').textContent = parseFloat(row.LeavesTakenToDate||0) || taken || '—';
+  document.getElementById('kpi-planned').textContent    = parseFloat(row.PlannedAheadLeaves||0) > 0 ? parseFloat(row.PlannedAheadLeaves) : '—';
+  document.getElementById('kpi-balance').textContent    = balance;
+  document.getElementById('kpi-compoff').textContent    = compoff;
+  document.getElementById('kpi-shortfall').textContent  = shortfall;
 
   // Shortfall color
   const sfEl = document.getElementById('kpi-shortfall');
