@@ -979,7 +979,7 @@ function buildMonthList(row) {
             ${detailCell('Half-day onsite', hdOnsite)}
             ${detailCell('Shortfall deduction', sfDed ? `<strong style="color:#C0392B">${sfDed}</strong>` : null)}
             ${probPayCut ? detailCell(
-              probPayCut.toLowerCase().includes('excess leave') ? 'Excess leave pay-cut' : 'Probation pay-cut',
+              'Pay-cut',
               `<strong style="color:#8B0000">⚠ ${probPayCut} — salary deduction applies</strong>`
             ) : ''}
             ${hrPaycut ? detailCell('HR pay-cut dates', `<strong style="color:#8B0000">⚠ ${hrPaycut} — marked as pay-cut by HR (leave balance not deducted)</strong>`) : ''}
