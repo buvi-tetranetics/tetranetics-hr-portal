@@ -978,7 +978,10 @@ function buildMonthList(row) {
             ${detailCell('Onsite / client dates', onsite)}
             ${detailCell('Half-day onsite', hdOnsite)}
             ${detailCell('Shortfall deduction', sfDed ? `<strong style="color:#C0392B">${sfDed}</strong>` : null)}
-            ${probPayCut ? detailCell('Probation pay-cut', `<strong style="color:#C0392B">⚠ ${probPayCut} excess leave during probation — salary deduction</strong>`) : ''}
+            ${probPayCut ? detailCell(
+              probPayCut.toLowerCase().includes('excess leave') ? 'Excess leave pay-cut' : 'Probation pay-cut',
+              `<strong style="color:#8B0000">⚠ ${probPayCut} — salary deduction applies</strong>`
+            ) : ''}
             ${hrPaycut ? detailCell('HR pay-cut dates', `<strong style="color:#8B0000">⚠ ${hrPaycut} — marked as pay-cut by HR (leave balance not deducted)</strong>`) : ''}
             ${detailCell('Weekly shortfalls', wkSF)}
             ${detailCell('Daily shortfalls', daySF)}
@@ -1538,7 +1541,9 @@ function renderLeaveBalance() {
       <td style="padding:10px 14px;text-align:center;color:${sf>0?'#C0392B':'var(--text3)'};font-weight:${sf>0?'600':'400'}">${sf > 0 ? sf : '—'}</td>
       <td style="padding:10px 14px;text-align:center;color:${compoff>0?'#1A8C3D':'var(--text3)'};font-weight:${compoff>0?'600':'400'}">${compoff > 0 ? '+'+compoff : '—'}</td>
       <td style="padding:10px 14px;text-align:center;color:${paycutDays>0?'#C0392B':'var(--text3)'};font-weight:${paycutDays>0?'600':'400'}">${paycutDays > 0 ? '⚠ '+paycutDays+'d' : '—'}</td>
-      <td style="padding:10px 14px;text-align:center;font-weight:700;font-size:15px;color:${balColor}">${balance}</td>
+      <td style="padding:10px 14px;text-align:center;font-weight:700;font-size:15px;color:${balColor}">
+        ${balance}${balance === 0 && paycutDays > 0 ? '<div style="font-size:10px;color:#8B0000">⚠ pay-cut</div>' : ''}
+      </td>
       <td style="padding:10px 14px;text-align:center;font-weight:700;font-size:15px;color:${projColor}">${projected}</td>
       <td style="padding:10px 14px;min-width:120px">
         <div style="background:var(--border);border-radius:4px;height:8px;overflow:hidden">
