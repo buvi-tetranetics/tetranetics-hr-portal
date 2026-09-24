@@ -878,10 +878,17 @@ function buildMonthList(row) {
   function parseSummary(str) {
     if (!str || str === 'None') return {};
     const map = {};
+    let lastMonth = null;
     str.split('|').forEach(part => {
       part = part.trim();
       const m = part.match(/^(\w+):\s*(.+)/);
-      if (m) map[m[1].trim()] = m[2].trim();
+      if (m) {
+        lastMonth = m[1].trim();
+        map[lastMonth] = m[2].trim();
+      } else if (lastMonth && part) {
+        // continuation of previous month (e.g. additional shortfall weeks)
+        map[lastMonth] += ' | ' + part;
+      }
     });
     return map;
   }
