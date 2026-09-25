@@ -573,7 +573,7 @@ const TENANT_ID   = "8e1ff4f6-4f96-4df3-9bdc-0d34c1b5360b";     // from Azure AD
 const REDIRECT_URI = window.location.href.split("?")[0].split("#")[0]; // auto-detects local or GitHub Pages
 
 // SSO enabled when CLIENT_ID is configured; falls back to email-only when not
-const SSO_ENABLED = CLIENT_ID !== "9bf20579-7383-49a2-b21e-5b60fcc819b1";
+const SSO_ENABLED = true;  // SSO enabled — CLIENT_ID and TENANT_ID configured
 
 // Attendance Dashboard — admin-only access
 const ADMIN_EMAILS = ["buvi.g@tetranetics.com", "siddhant@tetranetics.com"];
