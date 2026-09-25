@@ -356,18 +356,20 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
   <div id="login-view">
     <div class="login-card">
       <div class="login-title">Check your leave balance</div>
-      <div class="login-sub">Enter your work email to see your leave summary, balance, and monthly breakdown.</div>
+      <div class="login-sub" id="login-sub">Sign in with your Tetranetics Microsoft account to see your leave summary, balance, and monthly breakdown.</div>
 
       <div class="error-msg" id="error-msg"></div>
 
-      <div class="input-wrap">
-        <input type="email" id="email-input" placeholder="yourname@tetranetics.com"
-          autocomplete="email" spellcheck="false"
-          onkeydown="if(event.key==='Enter')lookupByEmail()">
+      <!-- Email login — hidden by default when SSO enabled, shown as fallback -->
+      <div id="email-section" style="display:none">
+        <div class="input-wrap">
+          <input type="email" id="email-input" placeholder="yourname@tetranetics.com"
+            autocomplete="email" spellcheck="false"
+            onkeydown="if(event.key==='Enter')lookupByEmail()">
+        </div>
+        <button class="btn-primary" onclick="lookupByEmail()">View my leave balance</button>
+        <div class="or-sep">or</div>
       </div>
-      <button class="btn-primary" onclick="lookupByEmail()">View my leave balance</button>
-
-      <div class="or-sep">or</div>
 
       <button class="btn-ms" id="btn-ms" onclick="signInMS()">
         <svg class="ms-icon" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -379,16 +381,32 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
         <span id="ms-btn-label">Sign in with Microsoft</span>
       </button>
       <script>
-        // Runs immediately — updates UI based on SSO config before page fully loads
+        // Show/hide sections based on SSO config
         if (typeof SSO_ENABLED !== "undefined" && !SSO_ENABLED) {
-          document.getElementById("ms-btn-label").textContent = "Sign in with Microsoft (setup required)";
-          document.getElementById("btn-ms").style.opacity = "0.5";
+          // SSO not configured — show email only
+          document.getElementById("email-section").style.display = "block";
+          document.getElementById("btn-ms").style.display = "none";
+          document.getElementById("login-sub").textContent = "Enter your work email to see your leave summary, balance, and monthly breakdown.";
         }
+        // SSO enabled — email section stays hidden, only Microsoft button shown
       </script>
 
       <div class="loading-dots" id="loading-dots">
         <span></span><span></span><span></span>
       </div>
+
+      <!-- Fallback link — only shown when SSO is enabled -->
+      <div id="sso-fallback-link" style="text-align:center;margin-top:12px;display:none">
+        <a href="#" style="font-size:12px;color:var(--text3);text-decoration:none"
+          onclick="event.preventDefault();document.getElementById('email-section').style.display='block';document.getElementById('sso-fallback-link').style.display='none';document.getElementById('email-input').focus()">
+          Having trouble? Sign in with email instead
+        </a>
+      </div>
+      <script>
+        if (typeof SSO_ENABLED !== "undefined" && SSO_ENABLED) {
+          document.getElementById("sso-fallback-link").style.display = "block";
+        }
+      </script>
 
       <div class="login-note" id="login-note">
         Sign in with Microsoft for secure access — only your own data is shown.<br>
@@ -710,7 +728,10 @@ async function signInMS() {
     if (e.errorCode === "user_cancelled") {
       clearError();
     } else {
-      showError("Sign-in failed: " + (e.message || e.errorCode || "unknown error"));
+      showError("Sign-in failed. You can use email login below as a fallback.");
+      // Show email fallback
+      document.getElementById("email-section").style.display = "block";
+      document.getElementById("email-input").focus();
     }
   }
 }
