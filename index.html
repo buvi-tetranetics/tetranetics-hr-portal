@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tetranetics — Attendance Portal</title>
+<title>Tetranetics — Leave Balance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.27.0/lib/msal-browser.min.js"></script>
@@ -341,7 +341,7 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
       </div>
       <div>
         <div class="logo-text">Tetranetics</div>
-        <div class="logo-sub">Attendance Portal</div>
+        <div class="logo-sub">HR Self-Service</div>
       </div>
     </div>
     <div class="nav-pills">
@@ -355,7 +355,7 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
   <!-- ── Login view ── -->
   <div id="login-view">
     <div class="login-card">
-      <div class="login-title">Check your Attendance Summary</div>
+      <div class="login-title">Check your leave balance</div>
       <div class="login-sub" id="login-sub">Sign in with your Tetranetics Microsoft account to see your leave summary, balance, and monthly breakdown.</div>
 
       <div class="error-msg" id="error-msg"></div>
@@ -596,15 +596,21 @@ const SSO_ENABLED = true;  // SSO enabled — CLIENT_ID and TENANT_ID configured
 // Attendance Dashboard — admin-only access
 const ADMIN_EMAILS = ["buvi.g@tetranetics.com", "siddhant@tetranetics.com"];
 
-// Demo holiday data — shown when HOLIDAYS_CSV_URL is not configured
+// Demo holiday data — matches actual company holidays as fallback
 const DEMO_HOLIDAYS = [
+  { Date: "2026-01-01", HolidayName: "New Year" },
   { Date: "2026-01-26", HolidayName: "Republic Day" },
-  { Date: "2026-03-14", HolidayName: "Holi" },
-  { Date: "2026-04-14", HolidayName: "Ambedkar Jayanti" },
+  { Date: "2026-03-04", HolidayName: "Holi (Dhulivandan)" },
+  { Date: "2026-03-19", HolidayName: "Gudi Padwa" },
+  { Date: "2026-05-01", HolidayName: "Labour Day" },
   { Date: "2026-08-15", HolidayName: "Independence Day" },
-  { Date: "2026-08-26", HolidayName: "Ganesh Chaturthi" },
+  { Date: "2026-09-14", HolidayName: "Ganesh Chaturthi" },
   { Date: "2026-10-02", HolidayName: "Gandhi Jayanti" },
-  { Date: "2026-10-20", HolidayName: "Diwali" },
+  { Date: "2026-10-20", HolidayName: "Dussehra" },
+  { Date: "2026-11-07", HolidayName: "Dipawali / Narak Chaturthi" },
+  { Date: "2026-11-08", HolidayName: "Diwali / Laxmi Pujan" },
+  { Date: "2026-11-10", HolidayName: "Balipratipada Padwa" },
+  { Date: "2026-11-11", HolidayName: "Bhaubij" },
   { Date: "2026-12-25", HolidayName: "Christmas" },
 ];
 
@@ -1130,7 +1136,9 @@ async function fetchHolidays() {
     const res = await fetch(HOLIDAYS_CSV_URL + "?t=" + Date.now());
     if (!res.ok) throw new Error(`Holidays fetch ${res.status}`);
     const text = await res.text();
-    const rows = parseCSV(text);
+    // Filter comment lines before parsing
+    const filtered = text.split('\n').filter(l => !l.startsWith('#')).join('\n');
+    const rows = parseCSV(filtered);
     if (!rows.length) throw new Error("Empty holidays CSV");
     return { data: rows, isDemo: false };
   } catch(e) {
