@@ -3508,7 +3508,7 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-10-05,,Seema Alam,Punched In
 2026-10-05,,Sumeet Jadhav,Punched In
 2026-10-05,,Justin Pinto,Punched In
-2026-10-05,,Bharat Goswami,Not Punched In
+2026-10-05,,Bharat Goswami,Leave
 2026-10-05,,Laxman Kandhukuri,Punched In
 2026-10-05,,Charlotte Crasto,Leave
 2026-10-05,,Sartik Sharma,Punched In
@@ -3516,7 +3516,7 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-10-05,,Abi Nandhan,Punched In
 2026-10-05,,Sai Srinivas Thutta,Punched In
 2026-10-05,,Sachin Alam,Punched In
-2026-10-05,,Harsh Prateek,Not Punched In
+2026-10-05,,Harsh Prateek,Leave
 2026-10-05,,Manisha Negi,Punched In
 2026-10-05,,Neel Patel,Punched In
 2026-10-05,,Aayuti Honawar,Punched In
@@ -3529,4 +3529,4 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-10-05,,Srujan K,Punched In
 2026-10-05,,Sunny Verma,Punched In
 2026-10-05,,Jayanthi Suvarna,Punched In
-# exported: 2026-10-05 19:50:37
+# exported: 2026-10-05 19:54:08
