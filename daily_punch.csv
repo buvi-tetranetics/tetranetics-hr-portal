@@ -3472,9 +3472,9 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-10-01,,Santosh Oza,Leave
 2026-10-01,,Vaibhav Pawar,Punched In
 2026-10-01,,Gayatri Jadhav,Punched In
-2026-10-01,,Srujan K,Not Punched In
-2026-10-01,,Sunny Verma,Not Punched In
-2026-10-01,,Jayanthi Suvarna,Not Punched In
+2026-10-01,,Srujan K,Punched In
+2026-10-01,,Sunny Verma,Punched In
+2026-10-01,,Jayanthi Suvarna,Punched In
 2026-10-02,,Shishir Jain,Holiday
 2026-10-02,,Poorvi Singh,Holiday
 2026-10-02,,Rohan Gaikwad,Holiday
@@ -3637,4 +3637,31 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-10-09,,Srujan K,Punched In
 2026-10-09,,Sunny Verma,Punched In
 2026-10-09,,Jayanthi Suvarna,Punched In
-# exported: 2026-10-09 11:53:37
+2026-10-12,,Shishir Jain,Punched In
+2026-10-12,,Poorvi Singh,Punched In
+2026-10-12,,Rohan Gaikwad,Punched In
+2026-10-12,,Seema Alam,Punched In
+2026-10-12,,Sumeet Jadhav,Punched In
+2026-10-12,,Justin Pinto,Punched In
+2026-10-12,,Bharat Goswami,Punched In
+2026-10-12,,Laxman Kandhukuri,Punched In
+2026-10-12,,Charlotte Crasto,Punched In
+2026-10-12,,Sartik Sharma,Punched In
+2026-10-12,,Krishna Pratap,Punched In
+2026-10-12,,Abi Nandhan,Punched In
+2026-10-12,,Sai Srinivas Thutta,Punched In
+2026-10-12,,Sachin Alam,Punched In
+2026-10-12,,Harsh Prateek,Punched In
+2026-10-12,,Manisha Negi,Punched In
+2026-10-12,,Neel Patel,Punched In
+2026-10-12,,Aayuti Honawar,Punched In
+2026-10-12,,Waghraj Patil,Punched In
+2026-10-12,,Gifta Muthuraj,Punched In
+2026-10-12,,Anish Salunkhe,Punched In
+2026-10-12,,Santosh Oza,Punched In
+2026-10-12,,Vaibhav Pawar,Punched In
+2026-10-12,,Gayatri Jadhav,Punched In
+2026-10-12,,Srujan K,Punched In
+2026-10-12,,Sunny Verma,Punched In
+2026-10-12,,Jayanthi Suvarna,Punched In
+# exported: 2026-10-12 11:53:56
