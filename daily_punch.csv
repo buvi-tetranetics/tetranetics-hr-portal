@@ -3755,12 +3755,12 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-10-16,,Laxman Kandhukuri,Punched In
 2026-10-16,,Charlotte Crasto,Punched In
 2026-10-16,,Sartik Sharma,Punched In
-2026-10-16,,Krishna Pratap,Not Punched In
+2026-10-16,,Krishna Pratap,Punched In
 2026-10-16,,Abi Nandhan,Punched In
 2026-10-16,,Sai Srinivas Thutta,Punched In
 2026-10-16,,Sachin Alam,Punched In
 2026-10-16,,Harsh Prateek,Punched In
-2026-10-16,,Manisha Negi,Not Punched In
+2026-10-16,,Manisha Negi,Punched In
 2026-10-16,,Neel Patel,Punched In
 2026-10-16,,Aayuti Honawar,Punched In
 2026-10-16,,Waghraj Patil,Punched In
@@ -3772,4 +3772,112 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-10-16,,Srujan K,Punched In
 2026-10-16,,Sunny Verma,Punched In
 2026-10-16,,Jayanthi Suvarna,Punched In
-# exported: 2026-10-21 09:26:00
+2026-10-19,,Shishir Jain,Punched In
+2026-10-19,,Poorvi Singh,Punched In
+2026-10-19,,Rohan Gaikwad,Punched In
+2026-10-19,,Seema Alam,Punched In
+2026-10-19,,Sumeet Jadhav,Punched In
+2026-10-19,,Justin Pinto,Punched In
+2026-10-19,,Bharat Goswami,Leave
+2026-10-19,,Laxman Kandhukuri,Leave
+2026-10-19,,Charlotte Crasto,Punched In
+2026-10-19,,Sartik Sharma,Punched In
+2026-10-19,,Krishna Pratap,Punched In
+2026-10-19,,Abi Nandhan,Punched In
+2026-10-19,,Sai Srinivas Thutta,Punched In
+2026-10-19,,Sachin Alam,Leave
+2026-10-19,,Harsh Prateek,Punched In
+2026-10-19,,Manisha Negi,Punched In
+2026-10-19,,Neel Patel,Leave
+2026-10-19,,Aayuti Honawar,Punched In
+2026-10-19,,Waghraj Patil,Punched In
+2026-10-19,,Gifta Muthuraj,WFH
+2026-10-19,,Anish Salunkhe,Punched In
+2026-10-19,,Santosh Oza,Onsite
+2026-10-19,,Vaibhav Pawar,Leave
+2026-10-19,,Gayatri Jadhav,WFH
+2026-10-19,,Srujan K,Punched In
+2026-10-19,,Sunny Verma,Punched In
+2026-10-19,,Jayanthi Suvarna,Onsite
+2026-10-20,,Shishir Jain,Holiday
+2026-10-20,,Poorvi Singh,Holiday
+2026-10-20,,Rohan Gaikwad,Holiday
+2026-10-20,,Seema Alam,Holiday
+2026-10-20,,Sumeet Jadhav,Holiday
+2026-10-20,,Justin Pinto,Holiday
+2026-10-20,,Bharat Goswami,Holiday
+2026-10-20,,Laxman Kandhukuri,Holiday
+2026-10-20,,Charlotte Crasto,Holiday
+2026-10-20,,Sartik Sharma,Holiday
+2026-10-20,,Krishna Pratap,Holiday
+2026-10-20,,Abi Nandhan,Holiday
+2026-10-20,,Sai Srinivas Thutta,Holiday
+2026-10-20,,Sachin Alam,Holiday
+2026-10-20,,Harsh Prateek,Holiday
+2026-10-20,,Manisha Negi,Holiday
+2026-10-20,,Neel Patel,Holiday
+2026-10-20,,Aayuti Honawar,Holiday
+2026-10-20,,Waghraj Patil,Holiday
+2026-10-20,,Gifta Muthuraj,Holiday
+2026-10-20,,Anish Salunkhe,Holiday
+2026-10-20,,Santosh Oza,Holiday
+2026-10-20,,Vaibhav Pawar,Holiday
+2026-10-20,,Gayatri Jadhav,Holiday
+2026-10-20,,Srujan K,Holiday
+2026-10-20,,Sunny Verma,Holiday
+2026-10-20,,Jayanthi Suvarna,Holiday
+2026-10-21,,Shishir Jain,Punched In
+2026-10-21,,Poorvi Singh,Punched In
+2026-10-21,,Rohan Gaikwad,Punched In
+2026-10-21,,Seema Alam,Punched In
+2026-10-21,,Sumeet Jadhav,Punched In
+2026-10-21,,Justin Pinto,Punched In
+2026-10-21,,Bharat Goswami,Punched In
+2026-10-21,,Laxman Kandhukuri,Leave
+2026-10-21,,Charlotte Crasto,WFH
+2026-10-21,,Sartik Sharma,Punched In
+2026-10-21,,Krishna Pratap,Punched In
+2026-10-21,,Abi Nandhan,Punched In
+2026-10-21,,Sai Srinivas Thutta,Punched In
+2026-10-21,,Sachin Alam,Punched In
+2026-10-21,,Harsh Prateek,Punched In
+2026-10-21,,Manisha Negi,Punched In
+2026-10-21,,Neel Patel,Punched In
+2026-10-21,,Aayuti Honawar,Punched In
+2026-10-21,,Waghraj Patil,Leave
+2026-10-21,,Gifta Muthuraj,Punched In
+2026-10-21,,Anish Salunkhe,Punched In
+2026-10-21,,Santosh Oza,Punched In
+2026-10-21,,Vaibhav Pawar,Punched In
+2026-10-21,,Gayatri Jadhav,Punched In
+2026-10-21,,Srujan K,Punched In
+2026-10-21,,Sunny Verma,Punched In
+2026-10-21,,Jayanthi Suvarna,Punched In
+2026-10-22,,Shishir Jain,Punched In
+2026-10-22,,Poorvi Singh,WFH
+2026-10-22,,Rohan Gaikwad,Punched In
+2026-10-22,,Seema Alam,WFH
+2026-10-22,,Sumeet Jadhav,Punched In
+2026-10-22,,Justin Pinto,Punched In
+2026-10-22,,Bharat Goswami,Punched In
+2026-10-22,,Laxman Kandhukuri,Leave
+2026-10-22,,Charlotte Crasto,Punched In
+2026-10-22,,Sartik Sharma,Punched In
+2026-10-22,,Krishna Pratap,Punched In
+2026-10-22,,Abi Nandhan,Punched In
+2026-10-22,,Sai Srinivas Thutta,Punched In
+2026-10-22,,Sachin Alam,Punched In
+2026-10-22,,Harsh Prateek,Punched In
+2026-10-22,,Manisha Negi,Punched In
+2026-10-22,,Neel Patel,Punched In
+2026-10-22,,Aayuti Honawar,Punched In
+2026-10-22,,Waghraj Patil,Not Punched In
+2026-10-22,,Gifta Muthuraj,Punched In
+2026-10-22,,Anish Salunkhe,Punched In
+2026-10-22,,Santosh Oza,Onsite
+2026-10-22,,Vaibhav Pawar,Punched In
+2026-10-22,,Gayatri Jadhav,Punched In
+2026-10-22,,Srujan K,Punched In
+2026-10-22,,Sunny Verma,Punched In
+2026-10-22,,Jayanthi Suvarna,Punched In
+# exported: 2026-10-22 10:11:32
