@@ -4050,6 +4050,7 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-11-02,,Seema Alam,Punched In
 2026-11-02,,Sumeet Jadhav,Punched In
 2026-11-02,,Justin Pinto,Punched In
+2026-11-02,,Bharat Goswami,Leave
 2026-11-02,,Laxman Kandhukuri,Punched In
 2026-11-02,,Charlotte Crasto,Punched In
 2026-11-02,,Sartik Sharma,Punched In
@@ -4075,8 +4076,9 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-11-03,,Nishant Dhargalkar,Not Punched In
 2026-11-03,,Rohan Gaikwad,Punched In
 2026-11-03,,Seema Alam,Punched In
-2026-11-03,,Sumeet Jadhav,Not Punched In
+2026-11-03,,Sumeet Jadhav,Punched In
 2026-11-03,,Justin Pinto,Punched In
+2026-11-03,,Bharat Goswami,Leave
 2026-11-03,,Laxman Kandhukuri,Punched In
 2026-11-03,,Charlotte Crasto,Punched In
 2026-11-03,,Sartik Sharma,Punched In
@@ -4096,4 +4098,60 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-11-03,,Gayatri Jadhav,Punched In
 2026-11-03,,Srujan K,Punched In
 2026-11-03,,Jayanthi Suvarna,Punched In
-# exported: 2026-11-05 11:38:03
+2026-11-04,,Siddhant Dhargalkar,Not Punched In
+2026-11-04,,Shishir Jain,WFH
+2026-11-04,,Poorvi Singh,Punched In
+2026-11-04,,Nishant Dhargalkar,Not Punched In
+2026-11-04,,Rohan Gaikwad,Punched In
+2026-11-04,,Seema Alam,Punched In
+2026-11-04,,Sumeet Jadhav,Punched In
+2026-11-04,,Justin Pinto,Punched In
+2026-11-04,,Bharat Goswami,Punched In
+2026-11-04,,Laxman Kandhukuri,Punched In
+2026-11-04,,Charlotte Crasto,Punched In
+2026-11-04,,Sartik Sharma,Punched In
+2026-11-04,,Krishna Pratap,Punched In
+2026-11-04,,Abi Nandhan,Leave
+2026-11-04,,Sai Srinivas Thutta,Punched In
+2026-11-04,,Sachin Alam,Punched In
+2026-11-04,,Harsh Prateek,Punched In
+2026-11-04,,Manisha Negi,Punched In
+2026-11-04,,Neel Patel,Punched In
+2026-11-04,,Aayuti Honawar,Punched In
+2026-11-04,,Waghraj Patil,Punched In
+2026-11-04,,Gifta Muthuraj,Punched In
+2026-11-04,,Anish Salunkhe,Punched In
+2026-11-04,,Santosh Oza,Leave
+2026-11-04,,Vaibhav Pawar,Punched In
+2026-11-04,,Gayatri Jadhav,Punched In
+2026-11-04,,Srujan K,Punched In
+2026-11-04,,Jayanthi Suvarna,Punched In
+2026-11-05,,Siddhant Dhargalkar,Not Punched In
+2026-11-05,,Shishir Jain,Not Punched In
+2026-11-05,,Poorvi Singh,Punched In
+2026-11-05,,Nishant Dhargalkar,Not Punched In
+2026-11-05,,Rohan Gaikwad,Punched In
+2026-11-05,,Seema Alam,Punched In
+2026-11-05,,Sumeet Jadhav,Punched In
+2026-11-05,,Justin Pinto,Punched In
+2026-11-05,,Bharat Goswami,Punched In
+2026-11-05,,Laxman Kandhukuri,Punched In
+2026-11-05,,Charlotte Crasto,Punched In
+2026-11-05,,Sartik Sharma,Punched In
+2026-11-05,,Krishna Pratap,Leave
+2026-11-05,,Abi Nandhan,Leave
+2026-11-05,,Sai Srinivas Thutta,Punched In
+2026-11-05,,Sachin Alam,Punched In
+2026-11-05,,Harsh Prateek,Punched In
+2026-11-05,,Manisha Negi,Punched In
+2026-11-05,,Neel Patel,Punched In
+2026-11-05,,Aayuti Honawar,Punched In
+2026-11-05,,Waghraj Patil,Half-day Leave
+2026-11-05,,Gifta Muthuraj,Punched In
+2026-11-05,,Anish Salunkhe,Punched In
+2026-11-05,,Santosh Oza,Onsite
+2026-11-05,,Vaibhav Pawar,Punched In
+2026-11-05,,Gayatri Jadhav,Punched In
+2026-11-05,,Srujan K,Punched In
+2026-11-05,,Jayanthi Suvarna,Punched In
+# exported: 2026-11-05 11:39:46
