@@ -4099,7 +4099,7 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-11-03,,Srujan K,Punched In
 2026-11-03,,Jayanthi Suvarna,Punched In
 2026-11-04,,Siddhant Dhargalkar,Not Punched In
-2026-11-04,,Shishir Jain,WFH
+2026-11-04,,Shishir Jain,Leave
 2026-11-04,,Poorvi Singh,Punched In
 2026-11-04,,Nishant Dhargalkar,Not Punched In
 2026-11-04,,Rohan Gaikwad,Punched In
@@ -4127,7 +4127,7 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-11-04,,Srujan K,Punched In
 2026-11-04,,Jayanthi Suvarna,Punched In
 2026-11-05,,Siddhant Dhargalkar,Not Punched In
-2026-11-05,,Shishir Jain,Not Punched In
+2026-11-05,,Shishir Jain,WFH
 2026-11-05,,Poorvi Singh,Punched In
 2026-11-05,,Nishant Dhargalkar,Not Punched In
 2026-11-05,,Rohan Gaikwad,Punched In
@@ -4154,4 +4154,4 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-11-05,,Gayatri Jadhav,Punched In
 2026-11-05,,Srujan K,Punched In
 2026-11-05,,Jayanthi Suvarna,Punched In
-# exported: 2026-11-05 11:40:24
+# exported: 2026-11-06 12:58:39
