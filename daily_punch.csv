@@ -4127,7 +4127,7 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-11-04,,Srujan K,Punched In
 2026-11-04,,Jayanthi Suvarna,Punched In
 2026-11-05,,Siddhant Dhargalkar,Not Punched In
-2026-11-05,,Shishir Jain,WFH
+2026-11-05,,Shishir Jain,Leave
 2026-11-05,,Poorvi Singh,Punched In
 2026-11-05,,Nishant Dhargalkar,Not Punched In
 2026-11-05,,Rohan Gaikwad,Punched In
@@ -4155,7 +4155,7 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-11-05,,Srujan K,Punched In
 2026-11-05,,Jayanthi Suvarna,Punched In
 2026-11-06,,Siddhant Dhargalkar,Not Punched In
-2026-11-06,,Shishir Jain,Not Punched In
+2026-11-06,,Shishir Jain,Leave
 2026-11-06,,Poorvi Singh,Punched In
 2026-11-06,,Nishant Dhargalkar,Not Punched In
 2026-11-06,,Rohan Gaikwad,Punched In
@@ -4183,7 +4183,7 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-11-06,,Srujan K,Punched In
 2026-11-06,,Jayanthi Suvarna,Punched In
 2026-11-09,,Siddhant Dhargalkar,Not Punched In
-2026-11-09,,Shishir Jain,Not Punched In
+2026-11-09,,Shishir Jain,Leave
 2026-11-09,,Poorvi Singh,Not Punched In
 2026-11-09,,Nishant Dhargalkar,Not Punched In
 2026-11-09,,Rohan Gaikwad,Punched In
@@ -4210,4 +4210,88 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-11-09,,Gayatri Jadhav,Leave
 2026-11-09,,Srujan K,Leave
 2026-11-09,,Jayanthi Suvarna,Punched In
-# exported: 2026-11-10 10:30:00
+2026-11-10,,Siddhant Dhargalkar,Holiday
+2026-11-10,,Shishir Jain,Holiday
+2026-11-10,,Poorvi Singh,Holiday
+2026-11-10,,Nishant Dhargalkar,Holiday
+2026-11-10,,Rohan Gaikwad,Holiday
+2026-11-10,,Seema Alam,Holiday
+2026-11-10,,Sumeet Jadhav,Holiday
+2026-11-10,,Justin Pinto,Holiday
+2026-11-10,,Bharat Goswami,Holiday
+2026-11-10,,Laxman Kandhukuri,Holiday
+2026-11-10,,Charlotte Crasto,Holiday
+2026-11-10,,Sartik Sharma,Holiday
+2026-11-10,,Krishna Pratap,Holiday
+2026-11-10,,Abi Nandhan,Holiday
+2026-11-10,,Sai Srinivas Thutta,Holiday
+2026-11-10,,Sachin Alam,Holiday
+2026-11-10,,Harsh Prateek,Holiday
+2026-11-10,,Manisha Negi,Holiday
+2026-11-10,,Neel Patel,Holiday
+2026-11-10,,Aayuti Honawar,Holiday
+2026-11-10,,Waghraj Patil,Holiday
+2026-11-10,,Gifta Muthuraj,Holiday
+2026-11-10,,Anish Salunkhe,Holiday
+2026-11-10,,Santosh Oza,Holiday
+2026-11-10,,Vaibhav Pawar,Holiday
+2026-11-10,,Gayatri Jadhav,Holiday
+2026-11-10,,Srujan K,Holiday
+2026-11-10,,Jayanthi Suvarna,Holiday
+2026-11-11,,Siddhant Dhargalkar,Holiday
+2026-11-11,,Shishir Jain,Holiday
+2026-11-11,,Poorvi Singh,Holiday
+2026-11-11,,Nishant Dhargalkar,Holiday
+2026-11-11,,Rohan Gaikwad,Holiday
+2026-11-11,,Seema Alam,Holiday
+2026-11-11,,Sumeet Jadhav,Holiday
+2026-11-11,,Justin Pinto,Holiday
+2026-11-11,,Bharat Goswami,Holiday
+2026-11-11,,Laxman Kandhukuri,Holiday
+2026-11-11,,Charlotte Crasto,Holiday
+2026-11-11,,Sartik Sharma,Holiday
+2026-11-11,,Krishna Pratap,Holiday
+2026-11-11,,Abi Nandhan,Holiday
+2026-11-11,,Sai Srinivas Thutta,Holiday
+2026-11-11,,Sachin Alam,Holiday
+2026-11-11,,Harsh Prateek,Holiday
+2026-11-11,,Manisha Negi,Holiday
+2026-11-11,,Neel Patel,Holiday
+2026-11-11,,Aayuti Honawar,Holiday
+2026-11-11,,Waghraj Patil,Holiday
+2026-11-11,,Gifta Muthuraj,Holiday
+2026-11-11,,Anish Salunkhe,Holiday
+2026-11-11,,Santosh Oza,Holiday
+2026-11-11,,Vaibhav Pawar,Holiday
+2026-11-11,,Gayatri Jadhav,Holiday
+2026-11-11,,Srujan K,Holiday
+2026-11-11,,Jayanthi Suvarna,Holiday
+2026-11-12,,Siddhant Dhargalkar,Not Punched In
+2026-11-12,,Shishir Jain,Not Punched In
+2026-11-12,,Poorvi Singh,Leave
+2026-11-12,,Nishant Dhargalkar,Not Punched In
+2026-11-12,,Rohan Gaikwad,Punched In
+2026-11-12,,Seema Alam,Punched In
+2026-11-12,,Sumeet Jadhav,Punched In
+2026-11-12,,Justin Pinto,Punched In
+2026-11-12,,Bharat Goswami,Not Punched In
+2026-11-12,,Laxman Kandhukuri,Not Punched In
+2026-11-12,,Charlotte Crasto,Punched In
+2026-11-12,,Sartik Sharma,Punched In
+2026-11-12,,Krishna Pratap,Leave
+2026-11-12,,Abi Nandhan,Leave
+2026-11-12,,Sai Srinivas Thutta,Leave
+2026-11-12,,Sachin Alam,Punched In
+2026-11-12,,Harsh Prateek,Leave
+2026-11-12,,Manisha Negi,Punched In
+2026-11-12,,Neel Patel,Leave
+2026-11-12,,Aayuti Honawar,Punched In
+2026-11-12,,Waghraj Patil,Leave
+2026-11-12,,Gifta Muthuraj,WFH
+2026-11-12,,Anish Salunkhe,Punched In
+2026-11-12,,Santosh Oza,Punched In
+2026-11-12,,Vaibhav Pawar,Leave
+2026-11-12,,Gayatri Jadhav,Leave
+2026-11-12,,Srujan K,Leave
+2026-11-12,,Jayanthi Suvarna,Punched In
+# exported: 2026-11-12 11:49:05
