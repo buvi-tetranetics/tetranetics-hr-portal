@@ -4184,7 +4184,7 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-11-06,,Jayanthi Suvarna,Punched In
 2026-11-09,,Siddhant Dhargalkar,Not Punched In
 2026-11-09,,Shishir Jain,Leave
-2026-11-09,,Poorvi Singh,Not Punched In
+2026-11-09,,Poorvi Singh,Leave
 2026-11-09,,Nishant Dhargalkar,Not Punched In
 2026-11-09,,Rohan Gaikwad,Punched In
 2026-11-09,,Seema Alam,Leave
@@ -4267,15 +4267,15 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-11-11,,Srujan K,Holiday
 2026-11-11,,Jayanthi Suvarna,Holiday
 2026-11-12,,Siddhant Dhargalkar,Not Punched In
-2026-11-12,,Shishir Jain,Not Punched In
+2026-11-12,,Shishir Jain,Leave
 2026-11-12,,Poorvi Singh,Leave
 2026-11-12,,Nishant Dhargalkar,Not Punched In
 2026-11-12,,Rohan Gaikwad,Punched In
 2026-11-12,,Seema Alam,Punched In
 2026-11-12,,Sumeet Jadhav,Punched In
 2026-11-12,,Justin Pinto,Punched In
-2026-11-12,,Bharat Goswami,Not Punched In
-2026-11-12,,Laxman Kandhukuri,Not Punched In
+2026-11-12,,Bharat Goswami,Leave
+2026-11-12,,Laxman Kandhukuri,WFH
 2026-11-12,,Charlotte Crasto,Punched In
 2026-11-12,,Sartik Sharma,Punched In
 2026-11-12,,Krishna Pratap,Leave
@@ -4294,4 +4294,4 @@ Date,EmployeeEmail,EmployeeName,Status
 2026-11-12,,Gayatri Jadhav,Leave
 2026-11-12,,Srujan K,Leave
 2026-11-12,,Jayanthi Suvarna,Punched In
-# exported: 2026-11-12 11:49:34
+# exported: 2026-11-13 10:34:21
